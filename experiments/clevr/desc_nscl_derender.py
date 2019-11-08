@@ -42,6 +42,7 @@ class Model(ReasoningV1Model):
         f_sng = self.scene_graph(f_scene, feed_dict.objects, feed_dict.objects_length)
         print(f_scene.shape)
         print(f_sng.shape)
+        print(self.scene_graph.output_dims)
         check=input('check1')
 
         programs = feed_dict.program_qsseq
