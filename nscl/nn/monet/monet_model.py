@@ -101,7 +101,7 @@ class MONetModel(BaseModel):
         self.m = torch.cat(m, dim=1)
         self.m_tilde_logits = torch.cat(m_tilde_logits, dim=1)
 
-    return self.m
+        return self.m
 
     def backward(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
