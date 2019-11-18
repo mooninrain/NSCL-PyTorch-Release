@@ -26,6 +26,8 @@ class MONet(nn.Module):
         self.netCVAE = networks.init_net(networks.ComponentVAE(3, 16), gpu_ids=self.gpu_ids)
         self.eps = torch.finfo(torch.float).eps
 
+        self.criterionKL = nn.KLDivLoss(reduction='batchmean')
+
     def forward(self,x_input):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
         self.loss_E = 0
@@ -79,6 +81,15 @@ class MONet(nn.Module):
 
         return self.m
 
+    def backward(self):
+        """Calculate losses, gradients, and update network weights; called in every training iteration"""
+        n = self.x.shape[0]
+        self.loss_E /= n
+        self.loss_D = -torch.logsumexp(self.b, dim=1).sum() / n
+        self.loss_mask = self.criterionKL(self.m_tilde_logits.log_softmax(dim=1), self.m)
+        loss = self.loss_D + self.beta * self.loss_E + self.gamma * self.loss_mask
+
+        return loss
 
 # class MONetModel(BaseModel):
 #     def __init__(self, opt):
