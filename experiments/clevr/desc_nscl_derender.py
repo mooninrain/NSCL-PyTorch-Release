@@ -41,8 +41,11 @@ class Model(ReasoningV1Model):
         f_scene = self.resnet(feed_dict.image)
         f_sng = self.scene_graph(f_scene, feed_dict.objects, feed_dict.objects_length)
         import pdb; pdb.set_trace()
-        print(f_scene)
-        print(f_sng)
+        print(type(feed_dict.image))
+        print(type(feed_dict.objects))
+        print(type(feed_dict.objects_length))
+        print(type(f_scene))
+        print(type(f_sng))
         print(self.scene_graph.output_dims)
         check=input('check1')
 
