@@ -41,13 +41,6 @@ class Model(ReasoningV1Model):
         f_scene = self.resnet(feed_dict.image)
         f_sng = self.scene_graph(f_scene, feed_dict.objects, feed_dict.objects_length)
         import pdb; pdb.set_trace()
-        print(type(feed_dict.image))
-        print(type(feed_dict.objects))
-        print(type(feed_dict.objects_length))
-        print(type(f_scene))
-        print(type(f_sng))
-        print(self.scene_graph.output_dims)
-        check=input('check1')
 
         programs = feed_dict.program_qsseq
         programs, buffers, answers = self.reasoning(f_sng, programs, fd=feed_dict)
