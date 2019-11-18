@@ -126,6 +126,8 @@ class SceneGraph(nn.Module):
                 x, y * sub_union_imap, z * obj_union_imap
             ], dim=1))
 
+            import pdb; pdb.set_trace()
+
             if DEBUG:
                 outputs.append([
                     None,
