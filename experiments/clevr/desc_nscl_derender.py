@@ -40,8 +40,8 @@ class Model(ReasoningV1Model):
 
         f_scene = self.resnet(feed_dict.image)
         f_sng = self.scene_graph(f_scene, feed_dict.objects, feed_dict.objects_length)
-        print(f_scene.shape)
-        print(f_sng.shape)
+        print(f_scene)
+        print(f_sng)
         print(self.scene_graph.output_dims)
         check=input('check1')
 
