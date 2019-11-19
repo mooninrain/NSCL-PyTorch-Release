@@ -25,14 +25,16 @@ __all__ = ['SceneGraph_MONet']
 
 
 class SceneGraph_MONet(nn.Module):
-    def __init__(self, feature_dim, output_dims, downsample_rate):
+    def __init__(self, feature_dim, output_dims, mask_downsample_rate):
         super().__init__()
+        self.slot_num = 11
         self.pool_size = 7
+
         self.feature_dim = feature_dim
         self.output_dims = output_dims
-        self.downsample_rate = downsample_rate
 
         self.monet_mask_extract = monet.MONet()
+        self.mask_downsample_rate = mask_downsample_rate
 
         self.context_feature_extract = nn.Conv2d(feature_dim, feature_dim, 1)
         self.relation_feature_extract = nn.Conv2d(feature_dim, feature_dim // 2 * 3, 1)
@@ -59,10 +61,13 @@ class SceneGraph_MONet(nn.Module):
         context_features = self.context_feature_extract(input)
         relation_features = self.relation_feature_extract(input)
         masks = self.monet_mask_extract(input)
+        masks = downsample_2D(masks,downsample_rate=self.mask_downsample_rate) #[batch_size,slot_num,h//downsample_rate,w//downsample_rate]
 
         outputs = list()
         objects_index = 0
         for i in range(input.size(0)):
+
+            this_context_features = context_features * masks[i]
 
 
             this_context_features = self.context_roi_pool(context_features, torch.cat([batch_ind, image_box], dim=-1))
@@ -88,8 +93,23 @@ class SceneGraph_MONet(nn.Module):
 
         return outputs
 
+    def get_loss(self):
+        return self.monet_mask_extract.get_loss()
+
     def _norm(self, x):
         return x / x.norm(2, dim=-1, keepdim=True)
 
-def downsample_integer(input,downsample_rate=4):
+def downsample_2D(input,downsample_rate=4,mode='mean'):
+    if len(input.shape!=4):
+        raise ValueError('input should be [batch_size,slot_num,h,w]')
+    elif input.shape[2]%downsample_rate!=0 or input.shape[3]%downsample_rate!=0:
+        raise ValueError('h,w should be divided exactly by downsample_rate')
+
+    input = input.view(input.shape[0],input.shape[1],input.shape[2]//downsample_rate,downsample_rate,input.shape[3]//downsample_rate,downsample_rate)
+    if mode == 'mean':
+        return torch.mean(input.float(),dim=(3,5))
+    elif mode == 'sum':
+        return torch.sum(input.float(),dim=(3,5))
+    else:
+        raise ValueError('improper mode')
     
