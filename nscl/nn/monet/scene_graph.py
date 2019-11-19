@@ -52,7 +52,7 @@ class scene_graph_with_monet(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        import pdb; pdb.set_traces()
+        import pdb; pdb.set_trace()
         for m in self.modules():
             try:
                 if isinstance(m, nn.Conv2d):
