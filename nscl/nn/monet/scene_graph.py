@@ -81,7 +81,7 @@ class scene_graph_with_monet(nn.Module):
         combined_object_features = torch.cat([masked_object_features,x_context,y_context*masks.unsqueeze(2)],dim=2)
         combined_object_features = combined_object_features.view(-1,self.feature_dim*2,self.h_f,self.w_f)
         combined_object_features = self.object_feature_fuse(combined_object_features)
-        combined_object_features = combined_object_features.view(input.shape[0],input.shape[1],self.output_dims[1],self.h_f,self.w_f)
+        combined_object_features = combined_object_features.view(input.shape[0],self.slot_num,self.output_dims[1],self.h_f,self.w_f)
 
         x_relation,y_relation,z_relation = masked_relation_features.chunk(3,dim=2)
         combined_relation_features = torch.cat([combined_object_features[:,sub_id],combined_object_features[:,obj_id],
