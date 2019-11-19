@@ -20,6 +20,7 @@ import jactorch
 import jactorch.nn as jacnn
 
 from . import monet
+from . import utils
 
 __all__ = ['SceneGraph_MONet']
 
@@ -27,8 +28,6 @@ __all__ = ['SceneGraph_MONet']
 class SceneGraph_MONet(nn.Module):
     def __init__(self, feature_dim, output_dims):
         super(SceneGraph_MONet).__init__()
-        self.dtype_box=torch.long
-
         self.h_f, self.w_f = 16, 24
         self.h_m, self.w_m = 64, 64
         self.slot_num = 11
@@ -37,7 +36,7 @@ class SceneGraph_MONet(nn.Module):
         self.output_dims = output_dims
 
         self.monet_mask_extract = monet.MONet()
-        self.mask_roi_pool = jacnn.PrRoIPool2D(self.h_f, self.w_f, 1.0)
+        self.resize_module = utils.resize_module(h1=self.h_m,w1=self.w_m,h2=self.h_f,w2=self.w_f)
 
         self.context_feature_extract = nn.Conv2d(feature_dim, feature_dim, 1)
         self.relation_feature_extract = nn.Conv2d(feature_dim, feature_dim // 2 * 3, 1)
@@ -64,13 +63,10 @@ class SceneGraph_MONet(nn.Module):
         context_features = self.context_feature_extract(input) #[batch_size,feature_dim,h_f,w_f]
         relation_features = self.relation_feature_extract(input) #[batch_size,feature_dim//2*3,h_f,w_f]
 
-        masks = self.monet_mask_extract(input) # [batch_size,slot_num,]
-        ind = torch.arange(input.shape[0],dtype=self.dtype_box,device=input.device).unsqueeze(-1)
-        box = torch.tensor([0,0,self.h_m-1,self.w_m-1],dtype=self.dtype_box,device=input.device).unsqueeze(0).repeat(32,1)
-        masks = self.mask_roi_pool(masks,torch.cat([batch_ind, box], dim=-1))
+        masks = self.monet_mask_extract(input) # [batch_size,slot_num,h_m,w_m]
+        masks = self.resize_module(masks.view(-1,self.h_m,self.w_m)).view(input.shape[0],-1,self.h_m,self.w_m)
 
-
-        sub_id, obj_id = jactorch.meshgrid(torch.arange(self.slot_num, dtype=self.dtype_box, device=input.device), dim=0)
+        sub_id, obj_id = jactorch.meshgrid(torch.arange(self.slot_num, dtype=input.dtype, device=input.device), dim=0)
         sub_id, obj_id = sub_id.contiguous().view(-1), obj_id.contiguous().view(-1)
 
         masked_object_features = object_features.unsqueeze(1) * masks.unsqueeze(2) #[batch_size,slot_num,feature_dim,h_f,w_f]
