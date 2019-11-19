@@ -8,7 +8,6 @@ class resize_module(nn.Module):
         super().__init__()
         self.h1, self.w1 = h1, w1
         self.h2, self.w2 = h2, w2
-        self.batch_dim = batch_dim
         self.roi_pool = jacnn.PrRoIPool2D(h2, w2, 1.0)
         self._type_defined_ = False
 
