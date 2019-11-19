@@ -34,5 +34,5 @@ class resize_module_cv2(nn.Module):
         # input [batch_size, n_channel, h1, w1]
         output = []
         for i in range(input.shape[0]):
-            output.append(self.transform(input[i].cpu()))
-        return torch.stack(output,dim=0).to(input.device) # output [batch_size, n_channel, h2, w2]
+            output.append(self.transform(input[i].cpu()).to(input.device))
+        return torch.stack(output,dim=0) # output [batch_size, n_channel, h2, w2]
