@@ -10,7 +10,7 @@ from . import networks
 
 class MONet(nn.Module):
     def __init__(self):
-        MONet.__init__(self)
+        super().__init__()
 
         self.beta = 0.5
         self.gamma = 0.5
