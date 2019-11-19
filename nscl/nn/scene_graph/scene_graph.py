@@ -38,31 +38,16 @@ class SceneGraph(nn.Module):
         self.context_roi_pool = jacnn.PrRoIPool2D(self.pool_size, self.pool_size, 1.0 / downsample_rate)
         self.relation_roi_pool = jacnn.PrRoIPool2D(self.pool_size, self.pool_size, 1.0 / downsample_rate)
 
-        if not DEBUG:
-            self.context_feature_extract = nn.Conv2d(feature_dim, feature_dim, 1)
-            self.relation_feature_extract = nn.Conv2d(feature_dim, feature_dim // 2 * 3, 1)
+        self.context_feature_extract = nn.Conv2d(feature_dim, feature_dim, 1)
+        self.relation_feature_extract = nn.Conv2d(feature_dim, feature_dim // 2 * 3, 1)
 
-            self.object_feature_fuse = nn.Conv2d(feature_dim * 2, output_dims[1], 1)
-            self.relation_feature_fuse = nn.Conv2d(feature_dim // 2 * 3 + output_dims[1] * 2, output_dims[2], 1)
+        self.object_feature_fuse = nn.Conv2d(feature_dim * 2, output_dims[1], 1)
+        self.relation_feature_fuse = nn.Conv2d(feature_dim // 2 * 3 + output_dims[1] * 2, output_dims[2], 1)
 
-            self.object_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[1] * self.pool_size ** 2, output_dims[1]))
-            self.relation_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[2] * self.pool_size ** 2, output_dims[2]))
+        self.object_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[1] * self.pool_size ** 2, output_dims[1]))
+        self.relation_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[2] * self.pool_size ** 2, output_dims[2]))
 
-            self.reset_parameters()
-        else:
-            def gen_replicate(n):
-                def rep(x):
-                    return torch.cat([x for _ in range(n)], dim=1)
-                return rep
-
-            self.pool_size = 32
-            self.object_roi_pool = jacnn.PrRoIPool2D(32, 32, 1.0 / downsample_rate)
-            self.context_roi_pool = jacnn.PrRoIPool2D(32, 32, 1.0 / downsample_rate)
-            self.relation_roi_pool = jacnn.PrRoIPool2D(32, 32, 1.0 / downsample_rate)
-            self.context_feature_extract = gen_replicate(2)
-            self.relation_feature_extract = gen_replicate(3)
-            self.object_feature_fuse = jacnn.Identity()
-            self.relation_feature_fuse = jacnn.Identity()
+        self.reset_parameters()
 
     def reset_parameters(self):
         for m in self.modules():
@@ -127,19 +112,11 @@ class SceneGraph(nn.Module):
             ], dim=1))
 
             import pdb; pdb.set_trace()
-
-            if DEBUG:
-                outputs.append([
-                    None,
-                    this_object_features,
-                    this_relation_features
-                ])
-            else:
-                outputs.append([
-                    None,
-                    self._norm(self.object_feature_fc(this_object_features.view(box.size(0), -1))),
-                    self._norm(self.relation_feature_fc(this_relation_features.view(box.size(0) * box.size(0), -1)).view(box.size(0), box.size(0), -1))
-                ])
+            outputs.append([
+                None,
+                self._norm(self.object_feature_fc(this_object_features.view(box.size(0), -1))),
+                self._norm(self.relation_feature_fc(this_relation_features.view(box.size(0) * box.size(0), -1)).view(box.size(0), box.size(0), -1))
+            ])
 
         return outputs
 
