@@ -55,10 +55,12 @@ class scene_graph_with_monet(nn.Module):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 nn.init.kaiming_normal_(m.weight.data)
-                m.bias.data.zero_() if 'bias' in m.__dict__
+                if 'bias' in m.__dict__:
+                    m.bias.data.zero_() 
             elif isinstance(m, nn.Linear):
                 nn.init.kaiming_normal_(m.weight.data)
-                m.bias.data.zero_() if 'bias' in m.__dict__
+                if 'bias' in m.__dict__:
+                    m.bias.data.zero_() 
 
     def forward(self, input, image):
         object_features = input #[batch_size,feature_dim,h_f,w_f]
