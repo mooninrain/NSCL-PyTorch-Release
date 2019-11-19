@@ -17,10 +17,10 @@ from nscl.datasets.definition import gdef
 
 logger = get_logger(__file__)
 
-__all__ = ['make_reasoning_v1_configs', 'ReasoningV1Model']
+__all__ = ['make_im2concept_v1_configs', 'Im2ConceptV1Model']
 
 
-def make_reasoning_v1_configs():
+def make_im2concept_v1_configs():
     configs = make_base_configs()
 
     # data configs
@@ -52,7 +52,7 @@ def make_reasoning_v1_configs():
     return configs
 
 
-class ReasoningV1Model(nn.Module):
+class Im2ConceptV1Model(nn.Module):
     def __init__(self, vocab, configs):
         super().__init__()
         self.vocab = vocab
@@ -61,9 +61,9 @@ class ReasoningV1Model(nn.Module):
         self.resnet = resnet.resnet34(pretrained=True, incl_gap=False, num_classes=None)
         self.resnet.layer4 = jacnn.Identity()
 
-        import nscl.nn.monet.monet as monet
+        import nscl.nn.monet.scene_graph_from_monet as sng
         # number of channels = 256; downsample rate = 16.
-        self.monet_model = monet.MONet(256, configs.model.sg_dims, 16)
+        self.scene_graph_with_monet = sng.SceneGraph_MONet(256, configs.model.sg_dims, 4)
 
         import nscl.nn.reasoning_v1.quasi_symbolic as qs
         self.reasoning = qs.DifferentiableReasoning(
