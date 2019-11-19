@@ -61,9 +61,9 @@ class Im2ConceptV1Model(nn.Module):
         self.resnet = resnet.resnet34(pretrained=True, incl_gap=False, num_classes=None)
         self.resnet.layer4 = jacnn.Identity()
 
-        import nscl.nn.monet.scene_graph_from_monet as sng
+        import nscl.nn.monet.scene_graph as sng
         # number of channels = 256; downsample rate = 16.
-        self.scene_graph_with_monet = sng.SceneGraph_MONet(256, configs.model.sg_dims, 4)
+        self.scene_graph = sng.scene_graph_with_monet(256, configs.model.sg_dims)
 
         import nscl.nn.reasoning_v1.quasi_symbolic as qs
         self.reasoning = qs.DifferentiableReasoning(
