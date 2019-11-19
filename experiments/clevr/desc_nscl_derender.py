@@ -22,8 +22,6 @@ from jacinle.utils.container import GView
 from nscl.models.reasoning_v1 import make_reasoning_v1_configs, ReasoningV1Model
 from nscl.models.utils import canonize_monitors, update_from_loss_module
 
-from nscl.nn.monet.monet_model import MONet
-
 configs = make_reasoning_v1_configs()
 configs.model.vse_known_belong = False
 configs.train.scene_add_supervision = False
