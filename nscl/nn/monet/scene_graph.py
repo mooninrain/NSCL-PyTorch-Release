@@ -88,6 +88,8 @@ class scene_graph_with_monet(nn.Module):
         combined_relation_features = combined_relation_features.view(-1,self.feature_dim // 2 * 3 + self.output_dims[1] * 2,self.h_f,self.w_f)
         combined_relation_features = self.relation_feature_fuse(combined_relation_features)
 
+        import pdb; pdb.set_trace()
+
         combined_object_features = combined_object_features.view(masks.shape[0]*masks.shape[1],-1)
         combined_object_features = self._norm(self.object_feature_fc(combined_object_features))
 
