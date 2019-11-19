@@ -22,8 +22,8 @@ class MONet(nn.Module):
                             ['xm{}'.format(i) for i in range(self.num_slots)] + \
                             ['x', 'x_tilde']
         self.model_names = ['Attn', 'CVAE']
-        self.netAttn = networks.init_net(networks.Attention(3, 1), gpu_ids=self.gpu_ids)
-        self.netCVAE = networks.init_net(networks.ComponentVAE(3, 16), gpu_ids=self.gpu_ids)
+        self.netAttn = networks.init_net(networks.Attention(3, 1), gpu_ids=0)
+        self.netCVAE = networks.init_net(networks.ComponentVAE(3, 16), gpu_ids=0)
         self.eps = torch.finfo(torch.float).eps
 
         self.criterionKL = nn.KLDivLoss(reduction='batchmean')
