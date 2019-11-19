@@ -28,6 +28,8 @@ class SceneGraph_MONet(nn.Module):
     def __init__(self, feature_dim, output_dims, mask_downsample_rate):
         super().__init__()
         self.slot_num = 11
+        self.feature_map_dims = (16,24)
+
         self.pool_size = 7
 
         self.feature_dim = feature_dim
@@ -42,8 +44,8 @@ class SceneGraph_MONet(nn.Module):
         self.object_feature_fuse = nn.Conv2d(feature_dim * 2, output_dims[1], 1)
         self.relation_feature_fuse = nn.Conv2d(feature_dim // 2 * 3 + output_dims[1] * 2, output_dims[2], 1)
 
-        self.object_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[1] * self.pool_size ** 2, output_dims[1]))
-        self.relation_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[2] * self.pool_size ** 2, output_dims[2]))
+        self.object_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[1]*self.feature_map_dims[0]*self.feature_map_dims[1], output_dims[1]))
+        self.relation_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[2]*self.feature_map_dims[0]*self.feature_map_dims[1], output_dims[2]))
 
         self.reset_parameters()
 
@@ -57,40 +59,44 @@ class SceneGraph_MONet(nn.Module):
                 m.bias.data.zero_()
 
     def forward(self, input):
-        object_features = input
-        context_features = self.context_feature_extract(input)
-        relation_features = self.relation_feature_extract(input)
+        object_features = input #[batch_size,feature_dim,h_f,w_f]
+        context_features = self.context_feature_extract(input) #[batch_size,feature_dim,h_f,w_f]
+        relation_features = self.relation_feature_extract(input) #[batch_size,feature_dim//2*3,h_f,w_f]
+
         masks = self.monet_mask_extract(input)
         masks = downsample_2D(masks,downsample_rate=self.mask_downsample_rate) #[batch_size,slot_num,h//downsample_rate,w//downsample_rate]
+        sub_id, obj_id = jactorch.meshgrid(torch.arange(self.slot_num, dtype=torch.int64, device=input.device), dim=0)
+        sub_id, obj_id = sub_id.contiguous().view(-1), obj_id.contiguous().view(-1)
 
-        outputs = list()
-        objects_index = 0
-        for i in range(input.size(0)):
+        masked_object_features = object_features.unsqueeze(1) * masks.unsqueeze(2) #[batch_size,slot_num,feature_dim,h_f,w_f]
+        masked_context_features = context_features.unsqueeze(1) * masks.unsqueeze(2)
+        masked_relation_features = relation_features.unsqueeze(1) * (masks[:,sub_id]+masks[:,obj_id]).unsqueeze(2)
 
-            this_context_features = context_features * masks[i]
+        x_context,y_context = masked_context_features.chunk(2,dim=2)
+        combined_object_features = torch.cat([masked_object_features,x_context,y_context*masks.unsqueeze(2)],dim=2)
+        combined_object_features = combined_object_features.view(-1,self.feature_dim*2,self.feature_map_dims[0],self.feature_map_dims[1])
+        combined_object_features = self.object_feature_fuse(combined_object_features)
 
+        x_relation,y_relation,z_relation = masked_relation_features.chunk(3,dim=2)
+        combined_relation_features = torch.cat([combined_object_features[:,sub_id],combined_object_features[:,obj_id],
+            x_relation,y_relation*masks[:, sub_id].unsqueeze(2),z_relation*masks[:,obj_id].unsqueeze(2)],dim=2)
+        combined_relation_features = combined_relation_features.view(-1,self.feature_dim // 2 * 3 + self.output_dims[1] * 2,self.feature_map_dims[0],self.feature_map_dims[1])
+        combined_relation_features = self.relation_feature_fuse(combined_relation_features)
 
-            this_context_features = self.context_roi_pool(context_features, torch.cat([batch_ind, image_box], dim=-1))
-            x, y = this_context_features.chunk(2, dim=1)
-            this_object_features = self.object_feature_fuse(torch.cat([
-                self.object_roi_pool(object_features, torch.cat([batch_ind, box], dim=-1)),
-                x, y * box_context_imap
-            ], dim=1))
+        combined_object_features = combined_object_features.view(masks.shape[0]*masks.shape[1],-1)
+        combined_object_features = self._norm(self.object_feature_fc(combined_object_features))
 
-            this_relation_features = self.relation_roi_pool(relation_features, torch.cat([rel_batch_ind, union_box], dim=-1))
-            x, y, z = this_relation_features.chunk(3, dim=1)
-            this_relation_features = self.relation_feature_fuse(torch.cat([
-                this_object_features[sub_id], this_object_features[obj_id],
-                x, y * sub_union_imap, z * obj_union_imap
-            ], dim=1))
+        combined_relation_features = combined_relation_features.view(masks.shape[0]*masks.shape[1]**2,-1)
+        combined_relation_features = self._norm(self.object_feature_fc(combined_relation_features))
+        combined_relation_features = combined_relation_features.view(masks.shape[0],masks.shape[1],masks.shape[1],-1)
 
-            import pdb; pdb.set_trace()
+        outputs = []
+        for i in range(input.shape[0]):
             outputs.append([
                 None,
-                self._norm(self.object_feature_fc(this_object_features.view(box.size(0), -1))),
-                self._norm(self.relation_feature_fc(this_relation_features.view(box.size(0) * box.size(0), -1)).view(box.size(0), box.size(0), -1))
+                combined_object_features[i],
+                combined_relation_features[i]
             ])
-
         return outputs
 
     def get_loss(self):
@@ -112,4 +118,3 @@ def downsample_2D(input,downsample_rate=4,mode='mean'):
         return torch.sum(input.float(),dim=(3,5))
     else:
         raise ValueError('improper mode')
-    
