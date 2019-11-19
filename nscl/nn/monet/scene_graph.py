@@ -91,6 +91,7 @@ class scene_graph_with_monet(nn.Module):
 
         combined_object_features = combined_object_features.view(masks.shape[0]*masks.shape[1],-1)
         combined_object_features = self._norm(self.object_feature_fc(combined_object_features))
+        combined_object_features = combined_object_features.view(mask.shape[0],masks.shape[1],-1)
 
         combined_relation_features = combined_relation_features.view(masks.shape[0]*masks.shape[1]**2,-1)
         combined_relation_features = self._norm(self.object_feature_fc(combined_relation_features))
