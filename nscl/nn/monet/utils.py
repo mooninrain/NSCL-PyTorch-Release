@@ -19,6 +19,8 @@ class resize_module(nn.Module):
             box = torch.tensor([0,0,self.h1-1,self.w1-1],dtype=input.dtype,device=input.device).unsqueeze(0).repeat(input.shape[0],1)
             self.ind_and_box = torch.cat([ind, box], dim=-1)
             self._type_defined_ = True
+
+        import pdb; pdb.set_trace()
         return self.roi_pool(input,self.ind_and_box).squeeze() # output [batch_size, n_channel, h2, w2]
 
 class resize_module_cv2(nn.Module):
