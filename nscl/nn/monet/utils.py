@@ -5,7 +5,7 @@ import torchvision.transforms as transforms
 
 class resize_module(nn.Module):
     def __init__(self,h1,w1,h2,w2):
-        super(resize_module).__init__()
+        super().__init__()
         self.h1, self.w1 = h1, w1
         self.h2, self.w2 = h2, w2
         self.batch_dim = batch_dim
@@ -24,7 +24,7 @@ class resize_module(nn.Module):
 
 class resize_module_cv2(nn.Module):
     def __init__(self,h1,w1,h2,w2):
-        super(resize_module_cv2).__init__()
+        super().__init__()
         self.transform = transforms.Compose([
             transforms.ToPILImage(),
             transforms.Resize(size=(h2,w2)),
