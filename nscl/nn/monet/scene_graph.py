@@ -70,12 +70,12 @@ class scene_graph_with_monet(nn.Module):
         masks = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
         masks = self.mask_resize(masks.view(-1,1,self.h_m,self.w_m)).view(input.shape[0],-1,self.h_f,self.w_f)
 
-        sub_id, obj_id = jactorch.meshgrid(torch.arange(self.slot_num, dtype=input.dtype, device=input.device), dim=0)
+        sub_id, obj_id = jactorch.meshgrid(torch.arange(self.slot_num, dtype=torch.long, device=input.device), dim=0)
         sub_id, obj_id = sub_id.contiguous().view(-1), obj_id.contiguous().view(-1)
 
         masked_object_features = object_features.unsqueeze(1) * masks.unsqueeze(2) #[batch_size,slot_num,feature_dim,h_f,w_f]
         masked_context_features = context_features.unsqueeze(1) * masks.unsqueeze(2)
-        masked_relation_features = relation_features.unsqueeze(1) * (masks[:,sub_id.long()]+masks[:,obj_id.long()]).unsqueeze(2)
+        masked_relation_features = relation_features.unsqueeze(1) * (masks[:,sub_id]+masks[:,obj_id]).unsqueeze(2)
 
         x_context,y_context = masked_context_features.chunk(2,dim=2)
         combined_object_features = torch.cat([masked_object_features,x_context,y_context*masks.unsqueeze(2)],dim=2)
@@ -83,8 +83,8 @@ class scene_graph_with_monet(nn.Module):
         combined_object_features = self.object_feature_fuse(combined_object_features)
 
         x_relation,y_relation,z_relation = masked_relation_features.chunk(3,dim=2)
-        combined_relation_features = torch.cat([combined_object_features[:,sub_id],combined_object_features[:,obj_id.long()],
-            x_relation,y_relation*masks[:, sub_id.long()].unsqueeze(2),z_relation*masks[:,obj_id.long()].unsqueeze(2)],dim=2)
+        combined_relation_features = torch.cat([combined_object_features[:,sub_id],combined_object_features[:,obj_id],
+            x_relation,y_relation*masks[:, sub_id].unsqueeze(2),z_relation*masks[:,obj_id].unsqueeze(2)],dim=2)
         combined_relation_features = combined_relation_features.view(-1,self.feature_dim // 2 * 3 + self.output_dims[1] * 2,self.h_f,self.w_f)
         combined_relation_features = self.relation_feature_fuse(combined_relation_features)
 
