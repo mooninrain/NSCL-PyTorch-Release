@@ -25,18 +25,19 @@ __all__ = ['SceneGraph_MONet']
 
 
 class SceneGraph_MONet(nn.Module):
-    def __init__(self, feature_dim, output_dims, mask_downsample_rate):
-        super().__init__()
-        self.slot_num = 11
-        self.feature_map_dims = (16,24)
+    def __init__(self, feature_dim, output_dims):
+        super(SceneGraph_MONet).__init__()
+        self.dtype_box=torch.long
 
-        self.pool_size = 7
+        self.h_f, self.w_f = 16, 24
+        self.h_m, self.w_m = 64, 64
+        self.slot_num = 11
 
         self.feature_dim = feature_dim
         self.output_dims = output_dims
 
         self.monet_mask_extract = monet.MONet()
-        self.mask_downsample_rate = mask_downsample_rate
+        self.mask_roi_pool = jacnn.PrRoIPool2D(self.h_f, self.w_f, 1.0)
 
         self.context_feature_extract = nn.Conv2d(feature_dim, feature_dim, 1)
         self.relation_feature_extract = nn.Conv2d(feature_dim, feature_dim // 2 * 3, 1)
@@ -44,8 +45,8 @@ class SceneGraph_MONet(nn.Module):
         self.object_feature_fuse = nn.Conv2d(feature_dim * 2, output_dims[1], 1)
         self.relation_feature_fuse = nn.Conv2d(feature_dim // 2 * 3 + output_dims[1] * 2, output_dims[2], 1)
 
-        self.object_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[1]*self.feature_map_dims[0]*self.feature_map_dims[1], output_dims[1]))
-        self.relation_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[2]*self.feature_map_dims[0]*self.feature_map_dims[1], output_dims[2]))
+        self.object_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[1]*self.h_f*self.w_f, output_dims[1]))
+        self.relation_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[2]*self.h_f*self.w_f, output_dims[2]))
 
         self.reset_parameters()
 
@@ -63,9 +64,13 @@ class SceneGraph_MONet(nn.Module):
         context_features = self.context_feature_extract(input) #[batch_size,feature_dim,h_f,w_f]
         relation_features = self.relation_feature_extract(input) #[batch_size,feature_dim//2*3,h_f,w_f]
 
-        masks = self.monet_mask_extract(input)
-        masks = downsample_2D(masks,downsample_rate=self.mask_downsample_rate) #[batch_size,slot_num,h//downsample_rate,w//downsample_rate]
-        sub_id, obj_id = jactorch.meshgrid(torch.arange(self.slot_num, dtype=torch.int64, device=input.device), dim=0)
+        masks = self.monet_mask_extract(input) # [batch_size,slot_num,]
+        ind = torch.arange(input.shape[0],dtype=self.dtype_box,device=input.device).unsqueeze(-1)
+        box = torch.tensor([0,0,self.h_m-1,self.w_m-1],dtype=self.dtype_box,device=input.device).unsqueeze(0).repeat(32,1)
+        masks = self.mask_roi_pool(masks,torch.cat([batch_ind, box], dim=-1))
+
+
+        sub_id, obj_id = jactorch.meshgrid(torch.arange(self.slot_num, dtype=self.dtype_box, device=input.device), dim=0)
         sub_id, obj_id = sub_id.contiguous().view(-1), obj_id.contiguous().view(-1)
 
         masked_object_features = object_features.unsqueeze(1) * masks.unsqueeze(2) #[batch_size,slot_num,feature_dim,h_f,w_f]
@@ -74,13 +79,13 @@ class SceneGraph_MONet(nn.Module):
 
         x_context,y_context = masked_context_features.chunk(2,dim=2)
         combined_object_features = torch.cat([masked_object_features,x_context,y_context*masks.unsqueeze(2)],dim=2)
-        combined_object_features = combined_object_features.view(-1,self.feature_dim*2,self.feature_map_dims[0],self.feature_map_dims[1])
+        combined_object_features = combined_object_features.view(-1,self.feature_dim*2,self.h_f,self.w_f)
         combined_object_features = self.object_feature_fuse(combined_object_features)
 
         x_relation,y_relation,z_relation = masked_relation_features.chunk(3,dim=2)
         combined_relation_features = torch.cat([combined_object_features[:,sub_id],combined_object_features[:,obj_id],
             x_relation,y_relation*masks[:, sub_id].unsqueeze(2),z_relation*masks[:,obj_id].unsqueeze(2)],dim=2)
-        combined_relation_features = combined_relation_features.view(-1,self.feature_dim // 2 * 3 + self.output_dims[1] * 2,self.feature_map_dims[0],self.feature_map_dims[1])
+        combined_relation_features = combined_relation_features.view(-1,self.feature_dim // 2 * 3 + self.output_dims[1] * 2,self.h_f,self.w_f)
         combined_relation_features = self.relation_feature_fuse(combined_relation_features)
 
         combined_object_features = combined_object_features.view(masks.shape[0]*masks.shape[1],-1)
@@ -105,16 +110,16 @@ class SceneGraph_MONet(nn.Module):
     def _norm(self, x):
         return x / x.norm(2, dim=-1, keepdim=True)
 
-def downsample_2D(input,downsample_rate=4,mode='mean'):
-    if len(input.shape!=4):
-        raise ValueError('input should be [batch_size,slot_num,h,w]')
-    elif input.shape[2]%downsample_rate!=0 or input.shape[3]%downsample_rate!=0:
-        raise ValueError('h,w should be divided exactly by downsample_rate')
+# def downsample_2D(input,downsample_rate=4,mode='mean'):
+#     if len(input.shape!=4):
+#         raise ValueError('input should be [batch_size,slot_num,h,w]')
+#     elif input.shape[2]%downsample_rate!=0 or input.shape[3]%downsample_rate!=0:
+#         raise ValueError('h,w should be divided exactly by downsample_rate')
 
-    input = input.view(input.shape[0],input.shape[1],input.shape[2]//downsample_rate,downsample_rate,input.shape[3]//downsample_rate,downsample_rate)
-    if mode == 'mean':
-        return torch.mean(input.float(),dim=(3,5))
-    elif mode == 'sum':
-        return torch.sum(input.float(),dim=(3,5))
-    else:
-        raise ValueError('improper mode')
+#     input = input.view(input.shape[0],input.shape[1],input.shape[2]//downsample_rate,downsample_rate,input.shape[3]//downsample_rate,downsample_rate)
+#     if mode == 'mean':
+#         return torch.mean(input.float(),dim=(3,5))
+#     elif mode == 'sum':
+#         return torch.sum(input.float(),dim=(3,5))
+#     else:
+#         raise ValueError('improper mode')
