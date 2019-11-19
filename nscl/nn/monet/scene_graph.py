@@ -52,13 +52,17 @@ class scene_graph_with_monet(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
+        import pdb; pdb.set_traces()
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight.data)
-                m.bias.data.zero_()
-            elif isinstance(m, nn.Linear):
-                nn.init.kaiming_normal_(m.weight.data)
-                m.bias.data.zero_()
+            try:
+                if isinstance(m, nn.Conv2d):
+                    nn.init.kaiming_normal_(m.weight.data)
+                    m.bias.data.zero_()
+                elif isinstance(m, nn.Linear):
+                    nn.init.kaiming_normal_(m.weight.data)
+                    m.bias.data.zero_()
+            except:
+                print(m)
 
     def forward(self, input, image):
         object_features = input #[batch_size,feature_dim,h_f,w_f]
