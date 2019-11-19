@@ -36,7 +36,7 @@ class Model(ReasoningV1Model):
         feed_dict = GView(feed_dict)
         monitors, outputs = {}, {}
 
-        f_scene = self.resnet(feed_dict.image)
+        f_scene = self.resnet(feed_dict.image) # [batch_size=32,n_channels=256,h=16,w=24]
         f_sng = self.scene_graph(f_scene, feed_dict.objects, feed_dict.objects_length)
 
         programs = feed_dict.program_qsseq
