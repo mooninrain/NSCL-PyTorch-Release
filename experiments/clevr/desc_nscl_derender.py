@@ -19,7 +19,7 @@ Note that, in order to train this model, one must use the curriculum learning.
 """
 
 from jacinle.utils.container import GView
-from nscl.models.reasoning_v1 import make_reasoning_v1_configs, ReasoningV1Model
+from nscl.models.reasoning_v1 import make_im2concept_v1_configs, ReasoningV1Model
 from nscl.models.utils import canonize_monitors, update_from_loss_module
 
 configs = make_reasoning_v1_configs()
