@@ -104,6 +104,8 @@ class SceneGraph(nn.Module):
                 x, y * box_context_imap
             ], dim=1))
 
+            import pdb; pdb.set_trace()
+
             this_relation_features = self.relation_roi_pool(relation_features, torch.cat([rel_batch_ind, union_box], dim=-1))
             x, y, z = this_relation_features.chunk(3, dim=1)
             this_relation_features = self.relation_feature_fuse(torch.cat([
