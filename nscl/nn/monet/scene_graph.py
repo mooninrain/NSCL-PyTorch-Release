@@ -27,7 +27,7 @@ __all__ = ['scene_graph_with_monet']
 
 class scene_graph_with_monet(nn.Module):
     def __init__(self, feature_dim, output_dims):
-        super(scene_graph_with_monet).__init__()
+        super().__init__()
         self.h_f, self.w_f = 16, 24
         self.h_m, self.w_m = 64, 64
         self.h_raw ,self.w_raw = 256, 384
