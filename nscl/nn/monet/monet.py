@@ -82,7 +82,7 @@ class MONet(nn.Module):
 
         return self.m
 
-    def backward(self):
+    def get_loss(self):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         n = self.x.shape[0]
         self.loss_E /= n
