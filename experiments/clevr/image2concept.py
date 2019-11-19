@@ -19,10 +19,10 @@ Note that, in order to train this model, one must use the curriculum learning.
 """
 
 from jacinle.utils.container import GView
-from nscl.models.image2concept_v1 import make_reasoning_v1_configs, Im2ConceptV1Model
+from nscl.models.image2concept_v1 import make_im2concept_v1_configs, Im2ConceptV1Model
 from nscl.models.utils import canonize_monitors, update_from_loss_module
 
-configs = make_reasoning_v1_configs()
+configs = make_im2concept_v1_configs()
 configs.model.vse_known_belong = False
 configs.train.scene_add_supervision = False
 configs.train.qa_add_supervision = True
