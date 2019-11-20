@@ -31,6 +31,8 @@ class MONet(nn.Module):
     def forward(self,x_input):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
         # x_input [batch_size, n_channels=3, h, w]
+
+        self.x = x_input
         self.loss_E = 0
         self.x_tilde = 0
         b = []
