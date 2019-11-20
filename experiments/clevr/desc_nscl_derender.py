@@ -44,18 +44,18 @@ class Model(ReasoningV1Model):
         outputs['buffers'] = buffers
         outputs['answer'] = answers
 
-        update_from_loss_module(monitors, outputs, self.scene_loss(
-            feed_dict, f_sng,
-            self.reasoning.embedding_attribute, self.reasoning.embedding_relation
-        ))
+        # update_from_loss_module(monitors, outputs, self.scene_loss(
+        #     feed_dict, f_sng,
+        #     self.reasoning.embedding_attribute, self.reasoning.embedding_relation
+        # ))
         update_from_loss_module(monitors, outputs, self.qa_loss(feed_dict, answers))
 
         canonize_monitors(monitors)
 
         if self.training:
             loss = monitors['loss/qa']
-            if configs.train.scene_add_supervision:
-                loss = loss + monitors['loss/scene']
+            # if configs.train.scene_add_supervision:
+            #     loss = loss + monitors['loss/scene']
             return loss, monitors, outputs
         else:
             outputs['monitors'] = monitors
