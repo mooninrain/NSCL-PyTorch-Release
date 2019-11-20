@@ -46,7 +46,7 @@ class SceneParsingLoss(MultitaskLossBase):
             all_scores = torch.stack(all_scores, dim=-1)
             all_labels = feed_dict['attribute_' + attribute]
 
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             if all_labels.dim() == all_scores.dim() - 1:
                 acc_key = 'acc/scene/attribute/' + attribute
                 monitors[acc_key] = (
