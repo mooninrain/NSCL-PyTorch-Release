@@ -72,7 +72,7 @@ class Im2ConceptV1Model(nn.Module):
         )
 
         import nscl.nn.reasoning_v1.losses as vqa_losses
-        self.scene_loss = vqa_losses.SceneParsingLoss(gdef.all_concepts, add_supervision=configs.train.scene_add_supervision)
+        # self.scene_loss = vqa_losses.SceneParsingLoss(gdef.all_concepts, add_supervision=configs.train.scene_add_supervision)
         self.qa_loss = vqa_losses.QALoss(add_supervision=configs.train.qa_add_supervision)
 
     def train(self, mode=True):
