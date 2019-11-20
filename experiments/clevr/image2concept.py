@@ -53,7 +53,7 @@ class Model(Im2ConceptV1Model):
         canonize_monitors(monitors)
 
         if self.training:
-            loss = monitors['loss/qa'] + self.scene_graph_with_monet.get_loss()
+            loss = monitors['loss/qa'] + self.scene_graph.get_loss()
             return loss, monitors, outputs
         else:
             outputs['monitors'] = monitors
