@@ -44,10 +44,10 @@ class Model(Im2ConceptV1Model):
         outputs['buffers'] = buffers
         outputs['answer'] = answers
 
-        update_from_loss_module(monitors, outputs, self.scene_loss(
-            feed_dict, f_sng,
-            self.reasoning.embedding_attribute, self.reasoning.embedding_relation
-        ))
+        # update_from_loss_module(monitors, outputs, self.scene_loss(
+        #     feed_dict, f_sng,
+        #     self.reasoning.embedding_attribute, self.reasoning.embedding_relation
+        # ))
         update_from_loss_module(monitors, outputs, self.qa_loss(feed_dict, answers))
 
         canonize_monitors(monitors)
