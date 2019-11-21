@@ -38,7 +38,7 @@ parser.add_argument('--desc', required=True, type='checked_file', metavar='FILE'
 parser.add_argument('--configs', default='', type='kv', metavar='CFGS')
 
 # training_target and curriculum learning
-parser.add_argument('--expr', default=None, metavar='DIR', help='experiment name')
+parser.add_argument('--expr', required=True, metavar='DIR', help='experiment name')
 parser.add_argument('--training-target', required=True, choices=['derender', 'parser', 'all'])
 parser.add_argument('--training-visual-modules', default='all', choices=['none', 'object', 'relation', 'all'])
 parser.add_argument('--curriculum', default='all', choices=['off', 'scene', 'program', 'all'])
@@ -125,14 +125,7 @@ args.configs.apply(configs)
 
 
 def main():
-    args.dump_dir = ensure_path(osp.join(
-        'dumps', args.series_name, args.desc_name, (
-            args.training_target +
-            ('-curriculum_' + args.curriculum) +
-            ('-qtrans_' + args.question_transform if args.question_transform is not None else '') +
-            ('-' + args.expr if args.expr is not None else '')
-        )
-    ))
+    args.dump_dir = ensure_path(osp.join('dumps', args.series_name, args.desc_name, args.expr))
 
     if not args.debug:
         args.ckpt_dir = ensure_path(osp.join(args.dump_dir, 'checkpoints'))
