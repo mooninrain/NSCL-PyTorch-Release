@@ -171,6 +171,7 @@ def main():
 def main_train(train_dataset, validation_dataset, extra_dataset=None):
     logger.critical('Building the model.')
     model = desc.make_model(args, train_dataset.unwrapped.vocab)
+    import pdb; pdb.set_trace()
 
     if args.use_gpu:
         model.cuda()
