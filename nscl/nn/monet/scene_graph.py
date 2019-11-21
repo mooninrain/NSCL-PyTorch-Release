@@ -212,8 +212,8 @@ class scene_graph_with_monet_v1(nn.Module):
             ])
         return outputs
 
-    def get_loss(self):
-        return self.monet_mask_extract.get_loss()
+    def get_monitor(self):
+        return self.monet_mask_extract.get_monitor()
 
     def _norm(self, x):
         return x / x.norm(2, dim=-1, keepdim=True)
