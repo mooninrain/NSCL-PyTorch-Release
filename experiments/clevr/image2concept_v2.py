@@ -49,8 +49,6 @@ class Model(Im2Conceptv2Model):
         update_from_loss_module(monitors, outputs, self.qa_loss(feed_dict, answers))
         canonize_monitors(monitors)
 
-        import pdb; pdb.set_trace()
-
         if self.training:
             loss = monitors['loss/qa'] + monitors['loss/monet'] * self.loss_ratio
             return loss, monitors, outputs
