@@ -19,7 +19,7 @@ Note that, in order to train this model, one must use the curriculum learning.
 """
 
 from jacinle.utils.container import GView
-from nscl.models.image2concept_v2 import make_im2concept_v2_configs, Im2ConceptV2Model
+from nscl.models.image2concept_v2 import make_im2concept_v2_configs, Im2Conceptv2Model
 from nscl.models.utils import canonize_monitors, update_from_loss_module
 
 configs = make_im2concept_v2_configs()
