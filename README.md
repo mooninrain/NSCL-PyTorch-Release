@@ -126,3 +126,9 @@ validation_extra/acc/qa/exist = 0.997652
 validation_extra/acc/qa/query = 0.997664
 validation_extra/acc/qa/query_attribute_equal = 0.996723
 ```
+
+## Image2Concept
+To train the model:
+```
+jac-crun <gpu_id> scripts/trainval.py --desc experiments/clevr/image2concept.py --training-target derender --curriculum all --dataset_name clevr --data-dir <data_dir>/clevr/train --batch-size 32 --epoch 100 --validation-interval 5 --save-interval 5 --data-split 0.95
+```
