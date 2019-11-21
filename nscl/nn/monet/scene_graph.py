@@ -54,7 +54,6 @@ class scene_graph_with_monet_v1(nn.Module):
         self.object_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[1]*self.h_f*self.w_f, output_dims[1]))
         self.relation_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[2]*self.h_f*self.w_f, output_dims[2]))
 
-        import pdb; pdb.set_trace()
         self.reset_parameters()
 
     def reset_parameters(self):
