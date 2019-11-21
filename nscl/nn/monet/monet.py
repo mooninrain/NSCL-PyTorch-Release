@@ -84,15 +84,14 @@ class MONet(nn.Module):
 
         return self.m
 
-    def get_loss(self):
-        """Calculate losses, gradients, and update network weights; called in every training iteration"""
+    def get_monitor(self):
         n = self.x.shape[0]
         self.loss_E /= n
         self.loss_D = -torch.logsumexp(self.b, dim=1).sum() / n
         self.loss_mask = self.criterionKL(self.m_tilde_logits.log_softmax(dim=1), self.m)
         loss = self.loss_D + self.beta * self.loss_E + self.gamma * self.loss_mask
 
-        return loss
+        return ({'loss/monet':loss,'loss/monet_D':self.loss_D,'loss/monet_E':self.loss_E,'loss/monet_mask':self.loss_mask},{})
 
 # class MONetModel(BaseModel):
 #     def __init__(self, opt):
