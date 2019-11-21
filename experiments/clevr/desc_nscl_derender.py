@@ -64,4 +64,5 @@ class Model(ReasoningV1Model):
 
 
 def make_model(args, vocab):
+    import pdb; pdb.set_trace()
     return Model(vocab)
