@@ -74,7 +74,7 @@ class scene_graph_with_monet(nn.Module):
 
         masks = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
         masks = self.mask_resize(masks.view(input.shape[0]*self.slot_num,1,self.h_m,self.w_m)).view(input.shape[0],self.slot_num,self.h_f,self.w_f)
-        mask_features = self.mask_feature_extract(masks.view(-1,self.h_f,self.w_f))
+        mask_features = self.mask_feature_extract(masks.view(input.shape[0]*self.slot_num,1,self.h_f,self.w_f))
         mask_features = mask_features.view(input.shape[0],self.slot_num,self.mask_feature_dim,self.h_f,self.w_f)
 
         sub_id, obj_id = jactorch.meshgrid(torch.arange(self.slot_num, dtype=torch.long, device=input.device), dim=0)
