@@ -34,11 +34,13 @@ logger = get_logger(__file__)
 
 parser = JacArgumentParser(description=__doc__.strip())
 
+parser.add_argument('--expr', required=True, metavar='DIR', help='experiment name')
 parser.add_argument('--desc', required=True, type='checked_file', metavar='FILE')
 parser.add_argument('--configs', default='', type='kv', metavar='CFGS')
 
 # training_target and curriculum learning
-parser.add_argument('--expr', required=True, metavar='DIR', help='experiment name')
+parser.add_argument('--loss_ratio', required=True, type=float)
+parser.add_argument('--loss_type', required=True,)
 parser.add_argument('--training-target', required=True, choices=['derender', 'parser', 'all'])
 parser.add_argument('--training-visual-modules', default='all', choices=['none', 'object', 'relation', 'all'])
 parser.add_argument('--curriculum', default='all', choices=['off', 'scene', 'program', 'all'])
