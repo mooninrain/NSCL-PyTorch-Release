@@ -29,8 +29,9 @@ configs.train.qa_add_supervision = True
 
 
 class Model(Im2ConceptV1Model):
-    def __init__(self, vocab):
-        super().__init__(vocab, configs)
+    def __init__(self, args, vocab):
+        super().__init__(args, vocab, configs)
+        self.loss_ratio = args.loss_ratio
 
     def forward(self, feed_dict):
         feed_dict = GView(feed_dict)
@@ -53,7 +54,7 @@ class Model(Im2ConceptV1Model):
         canonize_monitors(monitors)
 
         if self.training:
-            loss = monitors['loss/qa'] + self.scene_graph.get_loss()
+            loss = monitors['loss/qa'] + self.scene_graph.get_loss() * self.loss_ratio
             return loss, monitors, outputs
         else:
             outputs['monitors'] = monitors
@@ -61,4 +62,4 @@ class Model(Im2ConceptV1Model):
             return outputs
 
 def make_model(args, vocab):
-    return Model(vocab)
+    return Model(args, vocab)
