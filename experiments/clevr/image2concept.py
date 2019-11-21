@@ -53,6 +53,8 @@ class Model(Im2ConceptV1Model):
 
         canonize_monitors(monitors)
 
+        import pdb; pdb.set_trace()
+
         if self.training:
             loss = monitors['loss/qa'] + self.scene_graph.get_loss() * self.loss_ratio
             return loss, monitors, outputs
