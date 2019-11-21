@@ -20,7 +20,9 @@ import jactorch
 import jactorch.nn as jacnn
 
 from . import monet
-from . import utils
+from . import module
+
+from nscl.nn.utils import get_memory
 
 __all__ = ['scene_graph_with_monet']
 
@@ -36,9 +38,9 @@ class scene_graph_with_monet(nn.Module):
         self.feature_dim = feature_dim
         self.output_dims = output_dims
 
-        self.image_resize = utils.resize_module_cv2(h1=self.h_raw,w1=self.w_raw,h2=self.h_m,w2=self.w_m)
+        self.image_resize = module.resize_module_cv2(h1=self.h_raw,w1=self.w_raw,h2=self.h_m,w2=self.w_m)
         self.monet_mask_extract = monet.MONet()
-        self.mask_resize = utils.resize_module(h1=self.h_m,w1=self.w_m,h2=self.h_f,w2=self.w_f)
+        self.mask_resize = module.resize_module(h1=self.h_m,w1=self.w_m,h2=self.h_f,w2=self.w_f)
 
         self.context_feature_extract = nn.Conv2d(feature_dim, feature_dim, 1)
         self.relation_feature_extract = nn.Conv2d(feature_dim, feature_dim // 2 * 3, 1)
@@ -50,6 +52,8 @@ class scene_graph_with_monet(nn.Module):
         self.relation_feature_fc = nn.Sequential(nn.ReLU(True), nn.Linear(output_dims[2]*self.h_f*self.w_f, output_dims[2]))
 
         self.reset_parameters()
+
+        import pdb; pdb.set_trace()
 
     def reset_parameters(self):
         for m in self.modules():
