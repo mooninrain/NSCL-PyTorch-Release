@@ -32,6 +32,7 @@ class scene_graph_with_monet(nn.Module):
         super().__init__()
         self.h_f, self.w_f = 16, 24
         self.h_m, self.w_m = 64, 64
+        self.h_fc, self.w_fc = 7, 7
         self.h_raw ,self.w_raw = 256, 384
         self.slot_num = 11
 
@@ -73,7 +74,7 @@ class scene_graph_with_monet(nn.Module):
         relation_features = self.relation_feature_extract(input) #[batch_size,feature_dim//2*3,h_f,w_f]
 
         masks = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
-        masks = self.mask_resize(masks.view(-1,1,self.h_m,self.w_m)).view(input.shape[0],-1,self.h_f,self.w_f)
+        masks = self.mask_resize(masks.view(input.shape[0]*self.slot_num,1,self.h_m,self.w_m)).view(input.shape[0],self.slot_num,self.h_f,self.w_f)
         mask_features = self.mask_feature_extract(masks.view(-1,self.h_f,self.w_f))
         mask_features = mask_features.view(input.shape[0],self.slot_num,self.mask_feature_dim,self.h_f,self.w_f)
 
