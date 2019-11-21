@@ -66,7 +66,8 @@ parser.add_argument('--start-epoch', type=int, default=0, metavar='N', help='man
 parser.add_argument('--save-interval', type=int, default=2, metavar='N', help='model save interval (epochs) (default: 10)')
 
 # data related
-parser.add_argument('--dataset', required=True, choices=get_available_datasets(), help='dataset')
+parser.add_argument('--dataset_name', default='clevr', choices=['clevr','clevr_mini','clevr_noisy','clevr_mini_noisy'], help='dataset')
+parser.add_argument('--dataset', default='clevr', choices=get_available_datasets(), help='dataset')
 parser.add_argument('--data-dir', required=True, type='checked_dir', metavar='DIR', help='data directory')
 parser.add_argument('--data-trim', type=float, default=0, metavar='F', help='trim the dataset')
 parser.add_argument('--data-split',type=float, default=0.75, metavar='F', help='fraction / numer of training samples')
@@ -125,7 +126,7 @@ args.configs.apply(configs)
 
 
 def main():
-    args.dump_dir = ensure_path(osp.join('dumps', args.series_name, args.desc_name, args.expr))
+    args.dump_dir = ensure_path(osp.join('dumps', args.dataset_name, args.desc_name, args.expr))
 
     if not args.debug:
         args.ckpt_dir = ensure_path(osp.join(args.dump_dir, 'checkpoints'))
