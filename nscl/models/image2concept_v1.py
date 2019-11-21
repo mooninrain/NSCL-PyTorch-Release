@@ -53,7 +53,7 @@ def make_im2concept_v1_configs():
 
 
 class Im2ConceptV1Model(nn.Module):
-    def __init__(self, vocab, configs):
+    def __init__(self, args, vocab, configs):
         super().__init__()
         self.vocab = vocab
 
@@ -63,7 +63,7 @@ class Im2ConceptV1Model(nn.Module):
 
         import nscl.nn.monet.scene_graph as sng
         # number of channels = 256; downsample rate = 16.
-        self.scene_graph = sng.scene_graph_with_monet(256, configs.model.sg_dims)
+        self.scene_graph = sng.scene_graph_with_monet(256, configs.model.sg_dims, args.loss_type)
 
         import nscl.nn.reasoning_v1.quasi_symbolic as qs
         self.reasoning = qs.DifferentiableReasoning(
