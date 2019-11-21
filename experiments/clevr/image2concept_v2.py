@@ -45,18 +45,14 @@ class Model(Im2Conceptv2Model):
         outputs['buffers'] = buffers
         outputs['answer'] = answers
 
-        # update_from_loss_module(monitors, outputs, self.scene_loss(
-        #     feed_dict, f_sng,
-        #     self.reasoning.embedding_attribute, self.reasoning.embedding_relation
-        # ))
+        update_from_loss_module(monitors, outputs, self.scene_graph.get_monitor())
         update_from_loss_module(monitors, outputs, self.qa_loss(feed_dict, answers))
-
         canonize_monitors(monitors)
 
         import pdb; pdb.set_trace()
 
         if self.training:
-            loss = monitors['loss/qa'] + self.scene_graph.get_loss() * self.loss_ratio
+            loss = monitors['loss/qa'] + monitors['loss/monet'] * self.loss_ratio
             return loss, monitors, outputs
         else:
             outputs['monitors'] = monitors
