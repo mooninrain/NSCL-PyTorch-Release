@@ -130,5 +130,6 @@ validation_extra/acc/qa/query_attribute_equal = 0.996723
 ## Image2Concept
 To train the model:
 ```
-jac-crun 0 scripts/trainval.py --desc experiments/clevr/image2concept.py --training-target derender --curriculum all --epoch 100 --validation-interval 5 --save-interval 5 --data-split 0.95 --batch-size 32 --data-dir data_dir/clevr_mini --dataset_name clevr_mini --expr <expr_name>
+jac-run scripts/trainval.py --desc experiments/clevr/image2concept.py --training-target derender --curriculum all --epoch 100 --validation-interval 5 --save-interval 5 --data-split 0.95 --batch-size 32 --loss_ratio 1.0 --loss_type 'joint' --data-dir data_dir/clevr_mini --dataset_name clevr_mini --expr <expr_name>
 ```
+
