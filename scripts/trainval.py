@@ -165,6 +165,8 @@ def main():
     if args.extra_data_dir is not None:
         extra_dataset = build_dataset(args, configs, args.extra_data_image_root, args.extra_data_scenes_json, args.extra_data_questions_json)
 
+    logger.critical('expr condition: \n  expr_name: {}\n  dataset_name: {}\n  desc_name: {}\n  loss_type: {}\n  loss_ratio: {}.'.format(
+        args.expr, args.dataset_name, args.desc_name, args.loss_type, args.loss_ratio))
     main_train(train_dataset, validation_dataset, extra_dataset)
 
 
