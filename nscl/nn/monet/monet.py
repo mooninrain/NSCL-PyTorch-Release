@@ -72,6 +72,8 @@ class MONet(nn.Module):
             setattr(self, 'x{}'.format(k), x_mu_k)
             setattr(self, 'xm{}'.format(k), x_k_masked)
 
+            import pdb; pdb.set_trace()
+
             # Iteratively reconstruct the output image
             self.x_tilde += x_k_masked
             # Accumulate
