@@ -207,7 +207,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                             [TF.to_pil_image(output_dict['monet/xm'][i,k]) for k in range(num_slots)],
                             [TF.to_pil_image(output_dict['monet/x_tilde'][i]) for k in range(num_slots)]
                             ]
-                            montage = image_compose(monet_fig)
+                            montage = montage_fig(monet_fig)
                             # montage = tensor_to_fig(TF.to_tensor(montage))
 
                         QA_string = """
