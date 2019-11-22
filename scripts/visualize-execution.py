@@ -221,7 +221,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                             [tensor2im(output_dict['monet/m'][i,k]) for k in range(num_slots)],
                             [tensor2im(output_dict['monet/x'][i,k]) for k in range(num_slots)],
                             [tensor2im(output_dict['monet/xm'][i,k]) for k in range(num_slots)],
-                            [tensor2im(output_dict['monet/x_tilde'][i]) for k in range(num_slots)]
+                            [tensor2im(output_dict['monet/x_input'][i])] + [tensor2im(output_dict['monet/x_tilde'][i]) for k in range(num_slots-1)]
                             ]
                             montage = montage_fig(monet_fig)
                         vis.row(id=i, image=fig, mask=montage)
