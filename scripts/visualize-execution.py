@@ -227,9 +227,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                     ]):
                         # TODO(Jiayuan Mao @ 11/20): support output_dict.programs.
                         for j, (prog, buf) in enumerate(zip(feed_dict.program_seq[i], output_dict.buffers[i])):
-                            if j != len(feed_dict.program_seq[i]) - 1 and (buf > 0).long().sum().item() > 0:
-                                import pdb; pdb.set_trace()
-                                assert buf.size(0) == feed_dict.objects_raw[i].shape[0]
+                            if j != len(feed_dict.program_seq[i]) - 1 and (buf > 0).long().sum().item() > 0 and buf.size(0) == feed_dict.objects_raw[i].shape[0]:
                                 this_objects = feed_dict.objects_raw[i][torch.nonzero(buf > 0)[:, 0].numpy()]
                                 fig, ax = vis_bboxes(image, this_objects, 'object', add_text=False)
                             else:
