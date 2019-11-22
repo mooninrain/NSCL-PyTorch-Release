@@ -299,27 +299,7 @@ def tensor2im(input_image, imtype=np.uint8):
         image_numpy = input_image
     return Image.fromarray(image_numpy.astype(imtype)).convert('RGBA')
 
-# def tensor_to_fig(tensor,_permute=True):
-#     if _permute:
-#         tensor = tensor.permute(1,2,0)
-#     fig, ax = plt.subplots()
-#     ax.imshow(tensor)
-#     ax.axis('off')
-#     return fig
-
-# def image_compose(images,size_h=64,size_w=64):
-#     # images: list of list of tensors
-
-#     row = len(images)
-#     column = len(images[0])
-#     to_image = Image.new('RGB', (column * size_w, row * size_h))
-#     for y in range(row):
-#         for x in range(column):
-#             from_image = images[y][x].resize((size_w,size_h),Image.BILINEAR)
-#             to_image.paste(from_image, (x * size_w, y * size_h))
-#     return to_image
-
-
+    
 
 if __name__ == '__main__':
     main()
