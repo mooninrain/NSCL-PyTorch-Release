@@ -132,4 +132,8 @@ To train the model:
 ```
 jac-run scripts/trainval.py --desc experiments/clevr/image2concept_v1.py --training-target derender --curriculum all --epoch 100 --validation-interval 5 --save-interval 5 --data-split 0.95 --batch-size 8 --loss_ratio 0.1 --loss_type joint --data-dir data_dir/clevr_mini --dataset_name clevr_mini --expr <expr_name>
 ```
+To visualize execution:
+```
+jac-crun 5 scripts/visualize-execution.py --data_dir data_dir/clevr_mini --batch-size 8 --curriculum all --supervision derender --load dumps/clevr_mini/desc_nscl_derender/variant_expr_1/checkpoints/epoch_15.pth --desc experiments/clevr/desc_nscl_derender.py --dataset_name clevr --loss_type joint
+```
 
