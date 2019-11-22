@@ -95,7 +95,7 @@ class MONet(nn.Module):
             {'monet/m':[self.__getattr__('m{}'.format(k)) for k in range(self.num_slots)],
             'monet/x':[self.__getattr__('x{}'.format(k)) for k in range(self.num_slots)],
             'monet/xm':[self.__getattr__('xm{}'.format(k)) for k in range(self.num_slots)],
-            'monet/x_input':self.__getattr__('x'), 'monet/x_tilde':self.__getattr__('x_tilde')}
+            'monet/x_input':self.__getattr__('x'), 'monet/x_tilde':self.__getattr__('x_tilde')})
 
 # class MONetModel(BaseModel):
 #     def __init__(self, opt):
