@@ -202,10 +202,10 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         else:
                             num_slots = output_dict['monet/m'].shape[1]
                             monet_fig = [
-                            [output_dict['monet/m'][i,k] for k in range(num_slots)],
-                            [output_dict['monet/x'][i,k] for k in range(num_slots)],
-                            [output_dict['monet/xm'][i,k] for k in range(num_slots)],
-                            [output_dict['monet/x_tilde'][i] for k in range(num_slots)]
+                            [TF.to_pil_image(output_dict['monet/m'][i,k] for k in range(num_slots))],
+                            [TF.to_pil_image(output_dict['monet/x'][i,k] for k in range(num_slots))],
+                            [TF.to_pil_image(output_dict['monet/xm'][i,k] for k in range(num_slots))],
+                            [TF.to_pil_image(output_dict['monet/x_tilde'][i] for k in range(num_slots))]
                             ]
                             montage = image_compose(monet_fig)
 
@@ -261,7 +261,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
     logger.info('Happy Holiday! You can find your result at "http://monday.csail.mit.edu/xiuming' + osp.realpath(args.vis_dir) + '".')
 
 def image_compose(images,size_h=64,size_w=64):
-    # images: list of list
+    # images: list of list of tensors
 
     row = len(images)
     column = len(images[0])
