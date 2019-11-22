@@ -71,7 +71,6 @@ class MONet(nn.Module):
             setattr(self, 'm{}'.format(k), m_k * 2. - 1.) # shift mask from [0, 1] to [-1, 1]
             setattr(self, 'x{}'.format(k), x_mu_k)
             setattr(self, 'xm{}'.format(k), x_k_masked)
-            import pdb; pdb.set_trace()
 
             # Iteratively reconstruct the output image
             self.x_tilde += x_k_masked
