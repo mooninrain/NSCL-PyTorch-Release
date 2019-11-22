@@ -71,6 +71,7 @@ class MONet(nn.Module):
             setattr(self, 'm{}'.format(k), m_k * 2. - 1.) # shift mask from [0, 1] to [-1, 1]
             setattr(self, 'x{}'.format(k), x_mu_k)
             setattr(self, 'xm{}'.format(k), x_k_masked)
+            import pdb; pdb.set_trace()
 
             # Iteratively reconstruct the output image
             self.x_tilde += x_k_masked
@@ -92,9 +93,9 @@ class MONet(nn.Module):
         loss = self.loss_D + self.beta * self.loss_E + self.gamma * self.loss_mask
 
         return ({'loss/monet':loss,'loss/monet_D':self.loss_D,'loss/monet_E':self.loss_E,'loss/monet_mask':self.loss_mask},
-            {'monet/m':[getattr(self,'m{}'.format(k)) for k in range(self.num_slots)],
-            'monet/x':[getattr(self,'x{}'.format(k)) for k in range(self.num_slots)],
-            'monet/xm':[getattr(self,'xm{}'.format(k)) for k in range(self.num_slots)],
+            {'monet/m':torch.cat([getattr(self,'m{}'.format(k)) for k in range(self.num_slots)],dim=1), #[batch_size,num_slots,h_m,w_m]
+            'monet/x':torch.cat([getattr(self,'x{}'.format(k)) for k in range(self.num_slots)],dim=1), #[batch_size,num_slots,h_m,w_m]
+            'monet/xm':torch.cat([getattr(self,'xm{}'.format(k)) for k in range(self.num_slots)],dim=1), #[batch_size,num_slots,h_m,w_m]
             'monet/x_input':getattr(self,'x'), 'monet/x_tilde':getattr(self,'x_tilde')})
 
 # class MONetModel(BaseModel):
