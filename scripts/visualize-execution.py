@@ -263,7 +263,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
 
 def tensor_to_fig(tensor,_permute=True):
     if _permute:
-        tensor.permute(1,2,0)
+        tensor = tensor.permute(1,2,0)
     fig, ax = plt.subplots()
     ax.imshow(tensor)
     ax.axis('off')
