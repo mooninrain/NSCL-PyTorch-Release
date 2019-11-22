@@ -13,6 +13,7 @@ Neuro-Symbolic VQA and Neuro-Symbolic Concept Learner.
 """
 
 import time
+import os
 import os.path as osp
 
 import matplotlib; matplotlib.use('Agg')
@@ -243,6 +244,19 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
     vis.end_html()
 
     logger.info('Happy Holiday! You can find your result at "http://monday.csail.mit.edu/xiuming' + osp.realpath(args.vis_dir) + '".')
+
+def image_compose(images,size_h=64,size_w=64):
+    # images: list of list
+
+    row = len(images)
+    column = len(images[0])
+    to_image = Image.new('RGB', (column * size_w, row * size_h))
+    for y in range(row):
+        for x in range(column):
+            from_image = images[y][x].resize((size_w,size_h),Image.BILINEAR)
+            to_image.paste(from_image, (x * size_w, y * size_h))
+    return to_image
+
 
 
 if __name__ == '__main__':
