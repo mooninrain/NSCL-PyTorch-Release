@@ -203,7 +203,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                             monet_fig = [output_dict['monet/m'] + 
                                 output_dict['monet/x'] +
                                 output_dict['monet/xm'] +
-                                [output_dict['monet/x_tilde'] for k in range(len(output_dict['monet/m']))]
+                                [output_dict['monet/x_tilde'] for k in range(len(output_dict['monet/m']))]]
                             montage = image_compose(monet_fig)
 
                         QA_string = """
