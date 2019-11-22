@@ -288,7 +288,8 @@ def tensor2im(input_image, imtype=np.uint8):
         if isinstance(input_image, torch.Tensor):  # get the data from a variable
             image_tensor = input_image.data
             if image_tensor.shape[0] == 3:  # de-normalization
-                image_tensor = TF.normalize(image_tensor, [0.5]*3, [0.5]*3)
+                image_tensor = denormalize(image_tensor,[0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+                image_tensor = TF.normalize(image_tensor,[0.5]*3, [0.5]*3)
         else:
             return input_image
         image_numpy = image_tensor.cpu().float().numpy()  # convert it into a numpy array
@@ -300,6 +301,18 @@ def tensor2im(input_image, imtype=np.uint8):
     return Image.fromarray(image_numpy.astype(imtype)).convert('RGBA')
 
 
+def denormalize(tensor, mean, std, inplace=False):
+    if not _is_tensor_image(tensor):
+        raise TypeError('tensor is not a torch image.')
+
+    if not inplace:
+        tensor = tensor.clone()
+
+    dtype = tensor.dtype
+    mean = torch.as_tensor(mean, dtype=dtype, device=tensor.device)
+    std = torch.as_tensor(std, dtype=dtype, device=tensor.device)
+    tensor.mul_(std[:, None, None]).add_(mean[:, None, None])
+    return tensor
 
 if __name__ == '__main__':
     main()
