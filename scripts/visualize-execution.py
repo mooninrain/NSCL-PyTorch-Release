@@ -200,13 +200,12 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         if not args.show_mask:
                             montage=fig
                         else:
-                            import pdb;pdb.set_trace()
                             num_slots = output_dict['monet/m'].shape[1]
                             monet_fig = [
-                            [output_dict['monet/m'][n,k] for k in range(num_slots)],
-                            [output_dict['monet/x'][n,k] for k in range(num_slots)],
-                            [output_dict['monet/xm'][n,k] for k in range(num_slots)],
-                            [output_dict['monet/x_tilde'][n] for k in range(num_slots)]
+                            [output_dict['monet/m'][i,k] for k in range(num_slots)],
+                            [output_dict['monet/x'][i,k] for k in range(num_slots)],
+                            [output_dict['monet/xm'][i,k] for k in range(num_slots)],
+                            [output_dict['monet/x_tilde'][i] for k in range(num_slots)]
                             ]
                             montage = image_compose(monet_fig)
 
