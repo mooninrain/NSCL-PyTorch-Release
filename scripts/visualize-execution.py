@@ -210,7 +210,6 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                     ]):
                         image_filename = osp.join(args.data_image_root, feed_dict.image_filename[i])
                         image = Image.open(image_filename)
-                        import pdb; pdb.set_trace()
                         fig, ax = vis_bboxes(image, feed_dict.objects_raw[i], 'object', add_text=False)
                         _ = ax.set_title('object bounding box annotations')
                         if not args.show_mask:
