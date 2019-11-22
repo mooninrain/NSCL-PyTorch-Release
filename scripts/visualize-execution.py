@@ -288,7 +288,7 @@ def tensor2im(input_image, imtype=np.uint8):
         if isinstance(input_image, torch.Tensor):  # get the data from a variable
             image_tensor = input_image.data
                 if image_tensor.shape[0] == 3:  # de-normalization
-            image_tensor = TF.normalize(image_tensor, [0.5]*3, [0.5]*3)
+                    image_tensor = TF.normalize(image_tensor, [0.5]*3, [0.5]*3)
         else:
             return input_image
         image_numpy = image_tensor.cpu().float().numpy()  # convert it into a numpy array
@@ -299,7 +299,7 @@ def tensor2im(input_image, imtype=np.uint8):
         image_numpy = input_image
     return Image.fromarray(image_numpy.astype(imtype)).convert('RGBA')
 
-    
+
 
 if __name__ == '__main__':
     main()
