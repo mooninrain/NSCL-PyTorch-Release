@@ -288,6 +288,7 @@ def tensor2im(input_image, imtype=np.uint8):
         if isinstance(input_image, torch.Tensor):  # get the data from a variable
             image_tensor = input_image.data
             if image_tensor.shape[0] == 3:  # de-normalization
+                import pdb; pdb.set_trace()
                 image_tensor = denormalize(image_tensor,[0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
                 image_tensor = TF.normalize(image_tensor,[0.5]*3, [0.5]*3)
         else:
