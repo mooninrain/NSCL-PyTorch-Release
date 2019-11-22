@@ -208,7 +208,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                             [TF.to_pil_image(output_dict['monet/x_tilde'][i]) for k in range(num_slots)]
                             ]
                             montage = image_compose(monet_fig)
-                            fig, ax = vis_image(TF.to_tensor(montage).permute(1,2,0))
+                            montage = tensor_to_fig(TF.to_tensor(montage))
 
                         QA_string = """
                             <p><b>Q</b>: {}</p>
@@ -268,12 +268,6 @@ def tensor_to_fig(tensor,_permute=True):
     ax.imshow(image)
     ax.axis('off')
     return fig
-
-def vis_image(image):
-    fig, ax = plt.subplots()
-    ax.imshow(image)
-    ax.axis('off')
-    return fig, ax
 
 def image_compose(images,size_h=64,size_w=64):
     # images: list of list of tensors
