@@ -268,9 +268,9 @@ def tensor_to_fig(tensor,_permute=True):
     ax.axis('off')
     return fig
 
-def image_compose(images, size_h=64, size_w=64):
+def image_compose(images, fig_size=(11,4),ncols=11,nrows=4):
     # images list of list of tensors
-    fig, ax = plt.subplots(figsize=(11,4),ncols=11,nrows=4)#该方法会返回画图对象和坐标对象ax，figsize是设置子图长宽（1200，800）
+    fig, ax = plt.subplots(figsize=(11,4),ncols=ncols,nrows=nrows)#该方法会返回画图对象和坐标对象ax，figsize是设置子图长宽（1200，800）
     for x in range(row):
         for y in range(column):
             ax[x,y].imshow(images[x][y])
