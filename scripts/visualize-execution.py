@@ -265,7 +265,7 @@ def tensor_to_fig(tensor,_permute=True):
     if _permute:
         tensor.permute(1,2,0)
     fig, ax = plt.subplots()
-    ax.imshow(image)
+    ax.imshow(tensor)
     ax.axis('off')
     return fig
 
