@@ -134,6 +134,6 @@ jac-run scripts/trainval.py --desc experiments/clevr/image2concept_v1.py --train
 ```
 To visualize execution:
 ```
-jac-crun 5 scripts/visualize-execution.py --data_dir data_dir/clevr_mini --batch-size 8 --curriculum all --supervision derender --load dumps/clevr_mini/desc_nscl_derender/variant_expr_1/checkpoints/epoch_15.pth --desc experiments/clevr/desc_nscl_derender.py --dataset_name clevr --loss_type joint
+jac-crun 5 scripts/visualize-execution.py --data-dir data_dir/clevr_mini --batch-size 8 --curriculum all --supervision derender --load dumps/clevr_mini/desc_nscl_derender/variant_expr_1/checkpoints/epoch_15.pth --desc experiments/clevr/desc_nscl_derender.py --dataset_name clevr --loss_type joint
 ```
 
