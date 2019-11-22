@@ -208,7 +208,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                             [TF.to_pil_image(output_dict['monet/x_tilde'][i]) for k in range(num_slots)]
                             ]
                             montage = image_compose(monet_fig)
-                            montage = tensor_to_fig(TF.to_tensor(montage))
+                            # montage = tensor_to_fig(TF.to_tensor(montage))
 
                         QA_string = """
                             <p><b>Q</b>: {}</p>
@@ -268,17 +268,25 @@ def tensor_to_fig(tensor,_permute=True):
     ax.axis('off')
     return fig
 
-def image_compose(images,size_h=64,size_w=64):
-    # images: list of list of tensors
+def image_compose(images, size_h=64, size_w=64):
+    # images list of list of tensors
+    fig, ax = plt.subplots(figsize=(11,4),ncols=11,nrows=4)#该方法会返回画图对象和坐标对象ax，figsize是设置子图长宽（1200，800）
+    for x in range(row):
+        for y in range(column):
+            ax[x,y].imshow(images[x][y])
+    return fig
 
-    row = len(images)
-    column = len(images[0])
-    to_image = Image.new('RGB', (column * size_w, row * size_h))
-    for y in range(row):
-        for x in range(column):
-            from_image = images[y][x].resize((size_w,size_h),Image.BILINEAR)
-            to_image.paste(from_image, (x * size_w, y * size_h))
-    return to_image
+# def image_compose(images,size_h=64,size_w=64):
+#     # images: list of list of tensors
+
+#     row = len(images)
+#     column = len(images[0])
+#     to_image = Image.new('RGB', (column * size_w, row * size_h))
+#     for y in range(row):
+#         for x in range(column):
+#             from_image = images[y][x].resize((size_w,size_h),Image.BILINEAR)
+#             to_image.paste(from_image, (x * size_w, y * size_h))
+#     return to_image
 
 
 
