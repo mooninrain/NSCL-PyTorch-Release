@@ -200,6 +200,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         if not args.show_mask:
                             montage=fig
                         else:
+                            import pdb;pdb.set_trace()
                             monet_fig = [output_dict['monet/m'] + 
                                 output_dict['monet/x'] +
                                 output_dict['monet/xm'] +
