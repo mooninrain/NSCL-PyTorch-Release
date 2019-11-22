@@ -268,7 +268,6 @@ def image_compose(images,size_h=64,size_w=64):
     to_image = Image.new('RGB', (column * size_w, row * size_h))
     for y in range(row):
         for x in range(column):
-            import pdb;pdb.set_trace()
             from_image = images[y][x].resize((size_w,size_h),Image.BILINEAR)
             to_image.paste(from_image, (x * size_w, y * size_h))
     return to_image
