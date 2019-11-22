@@ -289,14 +289,14 @@ def tensor2im(input_image, imtype=np.uint8):
             image_tensor = input_image.data
             if image_tensor.shape[0] == 3:  # de-normalization
                 import pdb; pdb.set_trace()
-                image_tensor = denormalize(image_tensor,[0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-                image_tensor = TF.normalize(image_tensor,[0.5]*3, [0.5]*3)
+                # image_tensor = denormalize(image_tensor,[0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+                # image_tensor = TF.normalize(image_tensor,[0.5]*3, [0.5]*3)
         else:
             return input_image
         image_numpy = image_tensor.cpu().float().numpy()  # convert it into a numpy array
         if image_numpy.shape[0] == 1:  # grayscale to RGB
             image_numpy = np.tile(image_numpy, (3, 1, 1))
-        image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
+        image_numpy = (np.transpose(image_numpy, (1, 2, 0))) * 255.0  # post-processing: tranpose and scaling
     else:  # if it is a numpy array, do nothing
         image_numpy = input_image
     return Image.fromarray(image_numpy.astype(imtype))
