@@ -91,7 +91,11 @@ class MONet(nn.Module):
         self.loss_mask = self.criterionKL(self.m_tilde_logits.log_softmax(dim=1), self.m)
         loss = self.loss_D + self.beta * self.loss_E + self.gamma * self.loss_mask
 
-        return ({'loss/monet':loss,'loss/monet_D':self.loss_D,'loss/monet_E':self.loss_E,'loss/monet_mask':self.loss_mask},{})
+        return ({'loss/monet':loss,'loss/monet_D':self.loss_D,'loss/monet_E':self.loss_E,'loss/monet_mask':self.loss_mask},
+            {'monet/m':[self.__getattr__('m{}'.format(k)) for k in range(self.num_slots)],
+            'monet/x':[self.__getattr__('x{}'.format(k)) for k in range(self.num_slots)],
+            'monet/xm':[self.__getattr__('xm{}'.format(k)) for k in range(self.num_slots)],
+            'monet/x_input':self.__getattr__('x'), 'monet/x_tilde':self.__getattr__('x_tilde')}
 
 # class MONetModel(BaseModel):
 #     def __init__(self, opt):
