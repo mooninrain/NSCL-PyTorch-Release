@@ -271,8 +271,8 @@ def tensor_to_fig(tensor,_permute=True):
 def montage_fig(images, fig_size=(11,4),ncols=11,nrows=4):
     # images list of list of tensors
     fig, ax = plt.subplots(figsize=fig_size,ncols=ncols,nrows=nrows)#该方法会返回画图对象和坐标对象ax，figsize是设置子图长宽（1200，800）
-    for x in range(row):
-        for y in range(column):
+    for x in range(nrows):
+        for y in range(ncols):
             ax[x,y].imshow(images[x][y])
     return fig
 
