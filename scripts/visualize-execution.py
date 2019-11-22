@@ -44,13 +44,15 @@ logger = get_logger(__file__)
 
 parser = JacArgumentParser(description='')
 
+parser.add_argument('--expr', default=None, metavar='DIR', help='experiment name')
 parser.add_argument('--desc', required=True, type='checked_file', metavar='FILE')
 parser.add_argument('--configs', default='', type='kv', metavar='CFGS')
 parser.add_argument('--batch-size', type=int, default=64, metavar='N', help='batch size')
 parser.add_argument('--nr-visualize', default=16, type=int, metavar='N')
 
 # supervision and curriculum learning
-parser.add_argument('--expr', default=None, metavar='DIR', help='experiment name')
+parser.add_argument('--loss_ratio', required=True, type=float)
+parser.add_argument('--loss_type', required=True, choices=['joint', 'separate'])
 parser.add_argument('--supervision', required=True, choices=['derender', 'all'])
 parser.add_argument('--curriculum', required=True, choices=['off', 'scene', 'program', 'all'])
 parser.add_argument('--question-transform', default='nscliclr', choices=['nscliclr'])
@@ -59,7 +61,8 @@ parser.add_argument('--question-transform', default='nscliclr', choices=['nsclic
 parser.add_argument('--load', required=True, type='checked_file', metavar='FILE', help='load the weights from a pretrained model (default: none)')
 
 # data related
-parser.add_argument('--dataset', required=True, metavar='DS', choices=get_available_datasets(), help='dataset')
+parser.add_argument('--dataset_name', default='clevr', choices=['clevr','clevr_mini','clevr_noisy','clevr_mini_noisy'], help='dataset')
+parser.add_argument('--dataset', default='clevr', choices=get_available_datasets(), help='dataset')
 parser.add_argument('--data-dir', required=True, type='checked_dir', metavar='DIR', help='data directory')
 parser.add_argument('--data-split', required=False, type=float, default=0.75, metavar='F', help='fraction / numer of training samples')
 parser.add_argument('--data-vocab-json', type='checked_file', metavar='FILE')
@@ -103,17 +106,8 @@ desc = load_source(args.desc)
 configs = desc.configs
 args.configs.apply(configs)
 
-
 def main():
-    args.dump_dir = ensure_path(osp.join(
-        'dumps', args.series_name, args.desc_name, (
-            args.supervision +
-            ('-curriculum_' + args.curriculum) +
-            ('-qtrans_' + args.question_transform if args.supervision == 'all' else '') +
-            ('-' + args.expr if args.expr is not None else '')
-        )
-    ))
-
+    args.dump_dir = ensure_path(osp.join('dumps', args.dataset_name, args.desc_name, args.expr))
     args.ckpt_dir = ensure_path(osp.join(args.dump_dir, 'checkpoints'))
     args.meta_dir = ensure_path(osp.join(args.dump_dir, 'meta'))
     args.vis_dir = osp.join(args.dump_dir, 'vis', args.run_name)
