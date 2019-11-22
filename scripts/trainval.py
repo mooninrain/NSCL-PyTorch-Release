@@ -250,16 +250,16 @@ def main_train(train_dataset, validation_dataset, extra_dataset=None):
     # assert args.curriculum == 'off', 'Unimplemented feature: curriculum mode {}.'.format(args.curriculum)
     curriculum_strategy = [
         (0, 3, 4),
-        # (5, 3, 6),
-        # (10, 3, 8),
-        # (15, 4, 8),
-        # (25, 4, 12),
-        # (35, 5, 12),
-        # (45, 6, 12),
-        # (55, 7, 16),
-        # (65, 8, 20),
-        # (75, 9, 22),
-        # (90, 10, 25),
+        (5, 3, 6),
+        (10, 3, 8),
+        (15, 4, 8),
+        (25, 4, 12),
+        (35, 5, 12),
+        (45, 6, 12),
+        (55, 7, 16),
+        (65, 8, 20),
+        (75, 9, 22),
+        (90, 10, 25),
         (1e9, None, None)
     ]
 
