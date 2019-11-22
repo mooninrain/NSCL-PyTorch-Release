@@ -298,7 +298,7 @@ def tensor2im(input_image, imtype=np.uint8):
         image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
     else:  # if it is a numpy array, do nothing
         image_numpy = input_image
-    return Image.fromarray(image_numpy.astype(imtype)).convert('RGBA')
+    return Image.fromarray(image_numpy.astype(imtype))
 
 
 def denormalize(tensor, mean, std, inplace=False):
