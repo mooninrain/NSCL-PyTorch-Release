@@ -93,10 +93,10 @@ class MONet(nn.Module):
         loss = self.loss_D + self.beta * self.loss_E + self.gamma * self.loss_mask
 
         return ({'loss/monet':loss,'loss/monet_D':self.loss_D,'loss/monet_E':self.loss_E,'loss/monet_mask':self.loss_mask},
-            {'monet/m':torch.cat([getattr(self,'m{}'.format(k)) for k in range(self.num_slots)],dim=1), #[batch_size,num_slots,h_m,w_m]
-            'monet/x':torch.cat([getattr(self,'x{}'.format(k)) for k in range(self.num_slots)],dim=1), #[batch_size,num_slots,h_m,w_m]
-            'monet/xm':torch.cat([getattr(self,'xm{}'.format(k)) for k in range(self.num_slots)],dim=1), #[batch_size,num_slots,h_m,w_m]
-            'monet/x_input':getattr(self,'x'), 'monet/x_tilde':getattr(self,'x_tilde')})
+            {'monet/m':torch.stack([getattr(self,'m{}'.format(k)) for k in range(self.num_slots)],dim=1), #[batch_size,num_slots,n_channel=1,h_m,w_m]
+            'monet/x':torch.stack([getattr(self,'x{}'.format(k)) for k in range(self.num_slots)],dim=1), #[batch_size,num_slots,n_channel=3,h_m,w_m]
+            'monet/xm':torch.stack([getattr(self,'xm{}'.format(k)) for k in range(self.num_slots)],dim=1), #[batch_size,num_slots,n_channel=3,h_m,w_m]
+            'monet/x_input':getattr(self,'x'), 'monet/x_tilde':getattr(self,'x_tilde')}) #[batch_size,n_channel=3,h_m,w_m]
 
 # class MONetModel(BaseModel):
 #     def __init__(self, opt):
