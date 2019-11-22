@@ -206,7 +206,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                     with vis.table('Visualize #{} Metainfo'.format(visualized), [
                         HTMLTableColumnDesc('id', 'QID', 'text', {'width': '50px'}),
                         HTMLTableColumnDesc('image', 'Image', 'figure', {'width': '300px'}),
-                        HTMLTableColumnDesc('image', 'Image', 'figure', {'width': '700px'})
+                        HTMLTableColumnDesc('mask', 'Mask', 'figure', {'width': '700px'})
                     ]):
                         image_filename = osp.join(args.data_image_root, feed_dict.image_filename[i])
                         image = Image.open(image_filename)
