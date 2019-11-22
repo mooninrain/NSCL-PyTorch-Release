@@ -210,6 +210,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                     ]):
                         image_filename = osp.join(args.data_image_root, feed_dict.image_filename[i])
                         image = Image.open(image_filename)
+                        import pdb; pdb.set_trace()
                         fig, ax = vis_bboxes(image, feed_dict.objects_raw[i], 'object', add_text=False)
                         _ = ax.set_title('object bounding box annotations')
                         if not args.show_mask:
@@ -217,10 +218,10 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         else:
                             num_slots = output_dict['monet/m'].shape[1]
                             monet_fig = [
-                            [output_dict['monet/m'][i,k].permute(1,2,0) for k in range(num_slots)],
-                            [output_dict['monet/x'][i,k].permute(1,2,0) for k in range(num_slots)],
-                            [output_dict['monet/xm'][i,k].permute(1,2,0) for k in range(num_slots)],
-                            [output_dict['monet/x_tilde'][i].permute(1,2,0) for k in range(num_slots)]
+                            [TF.to_pil_image(output_dict['monet/m'][i,k]) for k in range(num_slots)],
+                            [TF.to_pil_image(output_dict['monet/x'][i,k][[2,1,0],:,:]) for k in range(num_slots)],
+                            [TF.to_pil_image(output_dict['monet/xm'][i,k][[2,1,0],:,:]) for k in range(num_slots)],
+                            [TF.to_pil_image(output_dict['monet/x_tilde'][i][[2,1,0],:,:]) for k in range(num_slots)]
                             ]
                             montage = montage_fig(monet_fig)
                         vis.row(id=i, image=fig, mask=montage)
