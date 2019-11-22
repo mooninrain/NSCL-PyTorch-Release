@@ -52,7 +52,7 @@ parser.add_argument('--batch-size', type=int, default=64, metavar='N', help='bat
 parser.add_argument('--nr-visualize', default=16, type=int, metavar='N')
 
 # supervision and curriculum learning
-parser.add_argument('--loss_ratio', required=True, type=float)
+parser.add_argument('--loss_ratio', default=0.1, type=float)
 parser.add_argument('--loss_type', required=True, choices=['joint', 'separate'])
 parser.add_argument('--supervision', required=True, choices=['derender', 'all'])
 parser.add_argument('--curriculum', required=True, choices=['off', 'scene', 'program', 'all'])
