@@ -302,12 +302,8 @@ def tensor2im(input_image, imtype=np.uint8):
 
 
 def denormalize(tensor, mean, std, inplace=False):
-    if not _is_tensor_image(tensor):
-        raise TypeError('tensor is not a torch image.')
-
     if not inplace:
         tensor = tensor.clone()
-
     dtype = tensor.dtype
     mean = torch.as_tensor(mean, dtype=dtype, device=tensor.device)
     std = torch.as_tensor(std, dtype=dtype, device=tensor.device)
