@@ -184,7 +184,8 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                 for i in range(n):
                     with vis.table('Visualize #{} Metainfo'.format(visualized), [
                         HTMLTableColumnDesc('id', 'QID', 'text', {'width': '50px'}),
-                        HTMLTableColumnDesc('image', 'Image', 'figure', {'width': '600px'}),
+                        HTMLTableColumnDesc('image', 'Image', 'figure', {'width': '300px'}),
+                        HTMLTableColumnDesc('mask', 'Mask', 'figure', {'width': '300px'}),
                         HTMLTableColumnDesc('qa', 'QA', 'text', {'width': '200px'}),
                         HTMLTableColumnDesc('p', 'Program', 'code', {'width': '200px'})
                     ]):
@@ -192,6 +193,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         image = Image.open(image_filename)
 
                         fig, ax = vis_bboxes(image, feed_dict.objects_raw[i], 'object', add_text=False)
+                        import pdb; pdb.set_trace()
                         _ = ax.set_title('object bounding box annotations')
 
                         QA_string = """
@@ -200,7 +202,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         """.format(feed_dict.question_raw[i], feed_dict.answer[i])
                         P_string = '\n'.join([repr(x) for x in feed_dict.program_seq[i]])
 
-                        vis.row(id=i, image=fig, qa=QA_string, p=P_string)
+                        vis.row(id=i, image=fig, mask=mask, qa=QA_string, p=P_string)
                         plt.close()
 
                     with vis.table('Visualize #{} Trace'.format(visualized), [
