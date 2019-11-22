@@ -202,10 +202,10 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         else:
                             num_slots = output_dict['monet/m'].shape[1]
                             monet_fig = [
-                            [TF.to_pil_image(output_dict['monet/m'][i,k] for k in range(num_slots))],
-                            [TF.to_pil_image(output_dict['monet/x'][i,k] for k in range(num_slots))],
-                            [TF.to_pil_image(output_dict['monet/xm'][i,k] for k in range(num_slots))],
-                            [TF.to_pil_image(output_dict['monet/x_tilde'][i] for k in range(num_slots))]
+                            [TF.to_pil_image(output_dict['monet/m'][i,k]) for k in range(num_slots)],
+                            [TF.to_pil_image(output_dict['monet/x'][i,k]) for k in range(num_slots)],
+                            [TF.to_pil_image(output_dict['monet/xm'][i,k]) for k in range(num_slots)],
+                            [TF.to_pil_image(output_dict['monet/x_tilde'][i]) for k in range(num_slots)]
                             ]
                             montage = image_compose(monet_fig)
 
