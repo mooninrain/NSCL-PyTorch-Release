@@ -187,16 +187,31 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                     with vis.table('Visualize #{} Metainfo'.format(visualized), [
                         HTMLTableColumnDesc('id', 'QID', 'text', {'width': '50px'}),
                         HTMLTableColumnDesc('image', 'Image', 'figure', {'width': '300px'}),
-                        HTMLTableColumnDesc('mask', 'Mask', 'figure', {'width': '300px'}),
                         HTMLTableColumnDesc('qa', 'QA', 'text', {'width': '200px'}),
                         HTMLTableColumnDesc('p', 'Program', 'code', {'width': '200px'})
                     ]):
                         image_filename = osp.join(args.data_image_root, feed_dict.image_filename[i])
                         image = Image.open(image_filename)
-
                         fig, ax = vis_bboxes(image, feed_dict.objects_raw[i], 'object', add_text=False)
                         _ = ax.set_title('object bounding box annotations')
+                        QA_string = """
+                            <p><b>Q</b>: {}</p>
+                            <p><b>A</b>: {}</p>
+                        """.format(feed_dict.question_raw[i], feed_dict.answer[i])
+                        P_string = '\n'.join([repr(x) for x in feed_dict.program_seq[i]])
 
+                        vis.row(id=i, image=fig, qa=QA_string, p=P_string)
+                        plt.close()
+
+                    with vis.table('Visualize #{} Metainfo'.format(visualized), [
+                        HTMLTableColumnDesc('id', 'QID', 'text', {'width': '50px'}),
+                        HTMLTableColumnDesc('image', 'Image', 'figure', {'width': '300px'}),
+                        HTMLTableColumnDesc('image', 'Image', 'figure', {'width': '700px'})
+                    ]):
+                        image_filename = osp.join(args.data_image_root, feed_dict.image_filename[i])
+                        image = Image.open(image_filename)
+                        fig, ax = vis_bboxes(image, feed_dict.objects_raw[i], 'object', add_text=False)
+                        _ = ax.set_title('object bounding box annotations')
                         if not args.show_mask:
                             montage=fig
                         else:
@@ -208,15 +223,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                             [TF.to_pil_image(output_dict['monet/x_tilde'][i]) for k in range(num_slots)]
                             ]
                             montage = montage_fig(monet_fig)
-                            # montage = tensor_to_fig(TF.to_tensor(montage))
-
-                        QA_string = """
-                            <p><b>Q</b>: {}</p>
-                            <p><b>A</b>: {}</p>
-                        """.format(feed_dict.question_raw[i], feed_dict.answer[i])
-                        P_string = '\n'.join([repr(x) for x in feed_dict.program_seq[i]])
-
-                        vis.row(id=i, image=fig, mask=montage, qa=QA_string, p=P_string)
+                        vis.row(id=i, image=fig, mask=montage)
                         plt.close()
 
                     with vis.table('Visualize #{} Trace'.format(visualized), [
@@ -260,21 +267,22 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
 
     logger.info('Happy Holiday! You can find your result at "http://monday.csail.mit.edu/xiuming' + osp.realpath(args.vis_dir) + '".')
 
-def tensor_to_fig(tensor,_permute=True):
-    if _permute:
-        tensor = tensor.permute(1,2,0)
-    fig, ax = plt.subplots()
-    ax.imshow(tensor)
-    ax.axis('off')
-    return fig
-
-def montage_fig(images, fig_size=(11,4),ncols=11,nrows=4):
+def montage_fig(images, fig_size=(11,4),ncols=11,nrows=4,_permute=True):
     # images list of list of tensors
     fig, ax = plt.subplots(figsize=fig_size,ncols=ncols,nrows=nrows)#该方法会返回画图对象和坐标对象ax，figsize是设置子图长宽（1200，800）
     for x in range(nrows):
         for y in range(ncols):
+            import pdb; pdb.set_trace()
             ax[x,y].imshow(images[x][y])
     return fig
+
+# def tensor_to_fig(tensor,_permute=True):
+#     if _permute:
+#         tensor = tensor.permute(1,2,0)
+#     fig, ax = plt.subplots()
+#     ax.imshow(tensor)
+#     ax.axis('off')
+#     return fig
 
 # def image_compose(images,size_h=64,size_w=64):
 #     # images: list of list of tensors
