@@ -200,10 +200,10 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         if not args.show_mask:
                             montage=fig
                         else:
-                            monet_fig = [[TF.to_pil_image(model.scene_graph.monet_mask_extract.__getattr__('m{}'.format(k))) for k in range(11)] + 
-                                [TF.to_pil_image(model.scene_graph.monet_mask_extract.__getattr__('x{}'.format(k))) for k in range(11)] +
-                                [TF.to_pil_image(model.scene_graph.monet_mask_extract.__getattr__('xm{}'.format(k))) for k in range(11)] +
-                                [TF.to_pil_image(model.scene_graph.monet_mask_extract.__getattr__('x_tilde')) for k in range(11)]]
+                            monet_fig = [output_dict['monet/m'] + 
+                                output_dict['monet/x'] +
+                                output_dict['monet/xm'] +
+                                [output_dict['monet/x_tilde'] for k in range(len(output_dict['monet/m']))]
                             montage = image_compose(monet_fig)
 
                         QA_string = """
