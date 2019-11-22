@@ -294,7 +294,7 @@ def tensor2im(input_image, imtype=np.uint8):
         image_numpy = (np.transpose(image_numpy, (1, 2, 0)) + 1) / 2.0 * 255.0  # post-processing: tranpose and scaling
     else:  # if it is a numpy array, do nothing
         image_numpy = input_image
-    return Image.fromarray(image_numpy.astype(imtype))
+    return Image.fromarray(image_numpy.astype(imtype)).convert('RGBA')
 
 # def tensor_to_fig(tensor,_permute=True):
 #     if _permute:
