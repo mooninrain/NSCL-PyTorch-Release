@@ -24,6 +24,7 @@ import torch.backends.cudnn as cudnn
 import torch.cuda as cuda
 
 from PIL import Image
+import torchvision.transforms.functional as TF
 
 from jacinle.cli.argument import JacArgumentParser
 from jacinle.logging import get_logger, set_output_file
@@ -93,6 +94,7 @@ if args.data_questions_json is None:
 # filenames
 args.series_name = args.dataset
 args.desc_name = escape_desc_name(args.desc)
+args.show_mask = True if args.desc_name.startswith('image2concept') else False
 args.run_name = 'run-{}'.format(time.strftime('%Y-%m-%d-%H-%M-%S'))
 
 if args.use_gpu:
@@ -193,8 +195,16 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         image = Image.open(image_filename)
 
                         fig, ax = vis_bboxes(image, feed_dict.objects_raw[i], 'object', add_text=False)
-                        import pdb; pdb.set_trace()
                         _ = ax.set_title('object bounding box annotations')
+
+                        if not args.show_mask:
+                            montage=fig
+                        else:
+                            monet_fig = [[TF.to_pil_image(model.scene_graph.monet_mask_extract['m{}'.format(k)]) for k in range(11)] + 
+                                [TF.to_pil_image(model.scene_graph.monet_mask_extract['x{}'.format(k)]) for k in range(11)] +
+                                [TF.to_pil_image(model.scene_graph.monet_mask_extract['xm{}'.format(k)]) for k in range(11)] +
+                                [TF.to_pil_image(model.scene_graph.monet_mask_extract['x_tilde']) for k in range(11)]]
+                            montage = image_compose(monet_fig)
 
                         QA_string = """
                             <p><b>Q</b>: {}</p>
@@ -202,7 +212,7 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                         """.format(feed_dict.question_raw[i], feed_dict.answer[i])
                         P_string = '\n'.join([repr(x) for x in feed_dict.program_seq[i]])
 
-                        vis.row(id=i, image=fig, mask=mask, qa=QA_string, p=P_string)
+                        vis.row(id=i, image=fig, mask=montage, qa=QA_string, p=P_string)
                         plt.close()
 
                     with vis.table('Visualize #{} Trace'.format(visualized), [
