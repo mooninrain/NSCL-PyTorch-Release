@@ -261,6 +261,14 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
 
     logger.info('Happy Holiday! You can find your result at "http://monday.csail.mit.edu/xiuming' + osp.realpath(args.vis_dir) + '".')
 
+def tensor_to_fig(tensor,_permute=True):
+    if _permute:
+        tensor.permute(1,2,0)
+    fig, ax = plt.subplots()
+    ax.imshow(image)
+    ax.axis('off')
+    return fig
+
 def vis_image(image):
     fig, ax = plt.subplots()
     ax.imshow(image)
