@@ -218,9 +218,9 @@ def validate_epoch(epoch, model, val_dataloader, meters, meter_prefix='validatio
                             num_slots = output_dict['monet/m'].shape[1]
                             monet_fig = [
                             [TF.to_pil_image(output_dict['monet/m'][i,k]) for k in range(num_slots)],
-                            [TF.to_pil_image(output_dict['monet/x'][i,k][[2,1,0],:,:]) for k in range(num_slots)],
-                            [TF.to_pil_image(output_dict['monet/xm'][i,k][[2,1,0],:,:]) for k in range(num_slots)],
-                            [TF.to_pil_image(output_dict['monet/x_tilde'][i][[2,1,0],:,:]) for k in range(num_slots)]
+                            [TF.to_pil_image(output_dict['monet/x'][i,k]) for k in range(num_slots)],
+                            [TF.to_pil_image(output_dict['monet/xm'][i,k]) for k in range(num_slots)],
+                            [TF.to_pil_image(output_dict['monet/x_tilde'][i]) for k in range(num_slots)]
                             ]
                             montage = montage_fig(monet_fig)
                         vis.row(id=i, image=fig, mask=montage)
@@ -273,6 +273,7 @@ def montage_fig(images, fig_size=(11,4),ncols=11,nrows=4):
     for x in range(nrows):
         for y in range(ncols):
             ax[x,y].imshow(images[x][y])
+            ax[x,y].axis('off')
     return fig
 
 # def tensor_to_fig(tensor,_permute=True):
