@@ -44,10 +44,6 @@ def annotate_objects(scene):
     boxes[:, 3] += boxes[:, 1]
 
     masks = [mask_utils.decode(i['mask']) for i in _get_object_masks(scene)]
-    print(masks)
-    masks = np.array(masks)
-    print(masks)
-    check=input('check')
 
-    return {'objects': boxes.astype('float32'), 'objects_mask': masks.astype('float32')}
+    return {'objects': boxes.astype('float32'), 'objects_mask': masks}
 
