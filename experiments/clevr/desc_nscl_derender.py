@@ -34,6 +34,9 @@ class Model(ReasoningV1Model):
 
     def forward(self, feed_dict):
         feed_dict = GView(feed_dict)
+
+        import pdb; pdb.set_trace()
+
         monitors, outputs = {}, {}
 
         f_scene = self.resnet(feed_dict.image) # [batch_size=32,n_channels=256,h=16,w=24]
