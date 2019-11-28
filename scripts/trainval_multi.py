@@ -17,7 +17,6 @@ import os.path as osp
 
 import torch.backends.cudnn as cudnn
 import torch.cuda as cuda
-from torch.optim import RMSProp
 
 trainable_parameters_monet = [x for name, x in model.named_parameters() ]
 from jacinle.cli.argument import JacArgumentParser
