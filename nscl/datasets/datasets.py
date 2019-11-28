@@ -132,8 +132,6 @@ class NSCLDatasetUnwrapped(FilterableDatasetUnwrapped):
             self.question_transform(feed_dict)
         feed_dict.question = np.array(self.vocab.map_sequence(feed_dict.question), dtype='int64')
 
-        import pdb; pdb.set_trace()
-
         return feed_dict.raw()
 
     def __len__(self):
