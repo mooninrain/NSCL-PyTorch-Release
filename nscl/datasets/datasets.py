@@ -171,6 +171,7 @@ class NSCLDatsetFilterableView(FilterableDatasetView):
 
         collate_guide = {
             'scene': 'skip',
+            'objects_mask': 'skip',
             'objects_raw': 'skip',
             'objects': 'concat',
 
