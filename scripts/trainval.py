@@ -18,7 +18,6 @@ import os.path as osp
 import torch.backends.cudnn as cudnn
 import torch.cuda as cuda
 
-trainable_parameters_monet = [x for name, x in model.named_parameters() ]
 from jacinle.cli.argument import JacArgumentParser
 from jacinle.logging import get_logger, set_output_file
 from jacinle.utils.imp import load_source
