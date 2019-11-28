@@ -12,6 +12,7 @@ import numpy as np
 
 import jaclearn.vision.coco.mask_utils as mask_utils
 
+
 __all__ = ['annotate_objects']
 
 
@@ -35,6 +36,8 @@ def annotate_objects(scene):
     if 'objects' not in scene and 'objects_detection' not in scene:
         return dict()
 
+    print(_get_object_masks(scene)[0])
+
     boxes = [mask_utils.toBbox(i['mask']) for i in _get_object_masks(scene)]
     if len(boxes) == 0:
         return {'objects': np.zeros((0, 4), dtype='float32')}
@@ -42,5 +45,12 @@ def annotate_objects(scene):
     boxes[:, 2] += boxes[:, 0]
     boxes[:, 3] += boxes[:, 1]
 
-    return {'objects': boxes.astype('float32')}
+    import pdb; pdb.set_trace()
+
+    masks = [mask_utils.decode(i['mask']) for i in _get_object_masks(scene)]
+    print(masks)
+    masks = np.array(masks)
+    print(masks)
+
+    return {'objects': boxes.astype('float32'), 'objects_mask': masks.astype('float32')}
 
