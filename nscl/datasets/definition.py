@@ -9,7 +9,7 @@
 # Distributed under terms of the MIT license.
 
 from jacinle.utils.cache import cached_property
-from nscl.datasets.common.scene_annotation import annotate_objects
+from nscl.datasets.common.scene_annotation import annotate_objects, annotate_objects
 
 __all__ = ['DatasetDefinitionBase', 'get_global_definition', 'set_global_definition', 'gdef']
 
