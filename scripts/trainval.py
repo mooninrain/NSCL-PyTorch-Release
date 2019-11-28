@@ -193,7 +193,7 @@ def main_train(train_dataset, validation_dataset, extra_dataset=None):
         from jactorch.optim import AdamW
         from torch.optim import RMSProp
         trainable_parameters_monet = [x for name, x in model.named_parameters() if x.requires_grad and 'monet' in name 
-x.requires_grad and 'monet' in name]
+    x.requires_grad and 'monet' in name]
         trainable_parameters_nscl = [x for x in model.parameters if x.requires_grad and x not in trainable_parameters_monet]
 
         optimizer_monet = RMSProp(trainable_parameters_monet)
