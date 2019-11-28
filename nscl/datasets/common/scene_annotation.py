@@ -41,5 +41,8 @@ def annotate_objects(scene):
     boxes = np.array(boxes)
     boxes[:, 2] += boxes[:, 0]
     boxes[:, 3] += boxes[:, 1]
+
+    import pdb; pdb.set_trace()
+
     return {'objects': boxes.astype('float32')}
 
