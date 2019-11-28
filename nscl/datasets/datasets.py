@@ -110,6 +110,8 @@ class NSCLDatasetUnwrapped(FilterableDatasetUnwrapped):
             feed_dict.image = Image.open(osp.join(self.image_root, feed_dict.image_filename)).convert('RGB')
             feed_dict.image, feed_dict.objects = self.image_transform(feed_dict.image, feed_dict.objects)
 
+        import pdb; pdb.set_trace()
+
         # program
         if 'program_raw' in metainfo:
             feed_dict.program_raw = metainfo.program_raw
