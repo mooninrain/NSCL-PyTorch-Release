@@ -38,6 +38,8 @@ class Model(Im2Conceptv1Model):
         feed_dict = GView(feed_dict)
         monitors, outputs = {}, {}
 
+        import pdb; pdb.set_trace()
+
         f_scene = self.resnet(feed_dict.image) # [batch_size=32,n_channels=256,h=16,w=24]
         f_sng = self.scene_graph(f_scene,feed_dict.image, feed_dict.objects_mask if self.true_mask else None)
 
