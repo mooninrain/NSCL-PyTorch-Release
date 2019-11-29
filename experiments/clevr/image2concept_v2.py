@@ -32,13 +32,14 @@ class Model(Im2Conceptv2Model):
     def __init__(self, args, vocab):
         super().__init__(args, vocab, configs)
         self.loss_ratio = args.loss_ratio
+        self.true_mask = args.true_mask
 
     def forward(self, feed_dict):
         feed_dict = GView(feed_dict)
         monitors, outputs = {}, {}
 
         f_scene = self.resnet(feed_dict.image) # [batch_size=32,n_channels=256,h=16,w=24]
-        f_sng = self.scene_graph(f_scene,feed_dict.image)
+        f_sng = self.scene_graph(f_scene,feed_dict.image, feed_dict.objects_mask if self.true_mask else None)
 
         programs = feed_dict.program_qsseq
         programs, buffers, answers = self.reasoning(f_sng, programs, fd=feed_dict)
