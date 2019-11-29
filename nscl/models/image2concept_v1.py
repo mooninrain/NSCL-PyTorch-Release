@@ -63,7 +63,7 @@ class Im2Conceptv1Model(nn.Module):
 
         import nscl.nn.monet.scene_graph as sng
         # number of channels = 256; downsample rate = 16.
-        self.scene_graph = sng.scene_graph_with_monet_v1(256, configs.model.sg_dims, args.loss_type)
+        self.scene_graph = sng.scene_graph_with_monet_v1(256, configs.model.sg_dims, args.loss_type, args.pretrained_monet)
 
         import nscl.nn.reasoning_v1.quasi_symbolic as qs
         self.reasoning = qs.DifferentiableReasoning(
