@@ -9,7 +9,7 @@ from . import networks
 
 
 class MONet(nn.Module):
-    def __init__(self,pretrained_monet):
+    def __init__(self,pretrained_monet,_freeze_=False):
         super().__init__()
 
         self.beta = 0.5
@@ -24,6 +24,10 @@ class MONet(nn.Module):
         self.model_names = ['Attn', 'CVAE']
         self.netAttn = networks.init_net(networks.Attention(3, 1))
         self.netCVAE = networks.init_net(networks.ComponentVAE(3, 16))
+        if pretrained_monet is not None:
+            self.load_networks(pretrained_monet)
+        if _freeze_:
+            self.freeze_networks()
         self.eps = torch.finfo(torch.float).eps
 
         self.criterionKL = nn.KLDivLoss(reduction='batchmean')
@@ -98,7 +102,7 @@ class MONet(nn.Module):
             'monet/x_input':getattr(self,'x'), 'monet/x_tilde':getattr(self,'x_tilde')}) #[batch_size,n_channel=3,h_m,w_m]
 
     def load_networks(self,pretrained_monet):
-        for net_name in ['Attn','CVAE']:
+        for net_name in self.model_names:
             load_path = os.path.join(pretrained_monet,'latest_net_%s.pth'%net_name)
             net = getattr(self, 'net'+net_name)
             state_dict = torch.load(load_path, map_location=str(net.device))
@@ -121,3 +125,10 @@ class MONet(nn.Module):
                 state_dict.pop('.'.join(keys))
         else:
             self.__patch_instance_norm_state_dict(state_dict, getattr(module, key), keys, i + 1)
+
+    def freeze_networks(self):
+        for net_name in self.model_names:
+            net = getattr(self, 'net'+net_name)
+        for child in net.children():
+            for param in child.parameters():
+                param.requires_grad = False
