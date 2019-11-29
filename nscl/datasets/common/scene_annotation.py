@@ -44,17 +44,17 @@ def annotate_objects(scene):
     boxes[:, 3] += boxes[:, 1]
 
     masks = [mask_utils.decode(i['mask']) for i in _get_object_masks(scene)]
-    masks = [mask_canonize(i) for i in masks]
+    masks = mask_canonize(masks)
 
     return {'objects': boxes.astype('float32'), 'objects_mask': masks}
 
-def mask_canonize(mask,slot_num=11):
-    _all_ = np.sum(np.array(mask,dtype=mask[0].dtype),axis=0,dtype=mask[0].dtype)
+def mask_canonize(masks,slot_num=11):
+    _all_ = np.sum(np.array(masks,dtype=masks[0].dtype),axis=0,dtype=masks[0].dtype)
     _all_ = (_all_ == 0).astype(_all_.dtype)
-    full_mask = [_all_]+mask
-    full_mask = full_mask[:slot_num]
-    canonized_mask = np.stack(full_mask)
-    if canonized_mask.shape[0] < slot_num:
-        pad_mask = np.zeros((slot_num - canonized_mask.shape[0],)+canonized_mask.shape[1:],dtype=canonized_mask.dtype)
-        canonized_mask = np.concatenate([canonized_mask,pad_mask],axis=0)
-    return canonized_mask        
+    full_masks = [_all_]+masks
+    full_masks = full_masks[:slot_num]
+    canonized_masks = np.stack(full_masks)
+    if canonized_masks.shape[0] < slot_num:
+        pad_masks = np.zeros((slot_num - canonized_masks.shape[0],)+canonized_masks.shape[1:],dtype=canonized_masks.dtype)
+        canonized_masks = np.concatenate([canonized_masks,pad_masks],axis=0)
+    return canonized_masks        
