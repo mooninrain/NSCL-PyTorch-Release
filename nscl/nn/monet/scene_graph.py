@@ -74,11 +74,13 @@ class scene_graph_with_monet_v1(nn.Module):
         context_features = self.context_feature_extract(input) #[batch_size,feature_dim,h_f,w_f]
         relation_features = self.relation_feature_extract(input) #[batch_size,feature_dim//2*3,h_f,w_f]
 
+        masks_monet = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
         if masks is None:
-            masks = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
+            masks = masks_monet
         else:
             masks = self.true_mask_resize(masks.view(input.shape[0]*self.slot_num,1,self.h_raw_raw,self.w_raw_raw))
             masks = masks.view(input.shape[0],self.slot_num,self.h_m,self.w_m)
+            self.monet_mask_extract.m = masks
 
         if self.loss_type == 'separate':
             masks = masks.detach()
