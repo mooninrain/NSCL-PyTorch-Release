@@ -29,20 +29,22 @@ __all__ = ['scene_graph_with_monet']
 
 
 class scene_graph_with_monet_v1(nn.Module):
-    def __init__(self, feature_dim, output_dims, loss_type, pretrained_monet=None):
+    def __init__(self, feature_dim, output_dims, loss_type, pretrained_monet=None, _freeze_=False):
         super().__init__()
         self.loss_type = loss_type
 
         self.h_f, self.w_f = 16, 24
         self.h_m, self.w_m = 64, 64
         self.h_raw ,self.w_raw = 256, 384
+        self.h_raw_raw, self.w_raw_raw = 320, 480
         self.slot_num = 11
 
         self.feature_dim = feature_dim
         self.output_dims = output_dims
 
         self.image_resize = module.resize_module_cv2(h1=self.h_raw,w1=self.w_raw,h2=self.h_m,w2=self.w_m)
-        self.monet_mask_extract = monet.MONet(pretrained_monet)
+        self.monet_mask_extract = monet.MONet(pretrained_monet,_freeze_)
+        self.true_mask_resize = module.resize_module_cv2(h1=self.h_raw_raw,w1=self.w_raw_raw,h2=self.h_m,w2=self.w_m)
         self.mask_resize = module.resize_module(h1=self.h_m,w1=self.w_m,h2=self.h_f,w2=self.w_f)
 
         self.context_feature_extract = nn.Conv2d(feature_dim, feature_dim, 1)
@@ -75,7 +77,7 @@ class scene_graph_with_monet_v1(nn.Module):
         if masks is None:
             masks = self.monet_mask_extract(self.image_resize(image),masks) # [batch_size,slot_num,h_m,w_m]
         else:
-            masks = self.image_resize(masks.view(-1,self.slot_num,self.h_raw,self.w_raw))
+            masks = self.true_mask_resize(masks.view(-1,self.slot_num,self.h_raw_raw,self.w_raw_raw))
         if self.loss_type == 'separate':
             masks = masks.detach()
         masks = self.mask_resize(masks.view(-1,1,self.h_m,self.w_m)).view(input.shape[0],-1,self.h_f,self.w_f)
@@ -125,7 +127,7 @@ class scene_graph_with_monet_v1(nn.Module):
 
 
 class scene_graph_with_monet_v2(nn.Module):
-    def __init__(self, feature_dim, output_dims, loss_type, pretrained_monet=None):
+    def __init__(self, feature_dim, output_dims, loss_type, pretrained_monet=None, _freeze_=False):
         super().__init__()
         self.loss_type = loss_type
 
@@ -133,6 +135,7 @@ class scene_graph_with_monet_v2(nn.Module):
         self.h_m, self.w_m = 64, 64
         self.h_fc, self.w_fc = 7, 7
         self.h_raw ,self.w_raw = 256, 384
+        self.h_raw_raw, self.w_raw_raw = 320, 480
         self.slot_num = 11
 
         self.mask_feature_dim = 32
@@ -140,7 +143,8 @@ class scene_graph_with_monet_v2(nn.Module):
         self.output_dims = output_dims
 
         self.image_resize = module.resize_module_cv2(h1=self.h_raw,w1=self.w_raw,h2=self.h_m,w2=self.w_m)
-        self.monet_mask_extract = monet.MONet(pretrained_monet)
+        self.monet_mask_extract = monet.MONet(pretrained_monet,_freeze_)
+        self.true_mask_resize = module.resize_module_cv2(h1=self.h_raw_raw,w1=self.w_raw_raw,h2=self.h_m,w2=self.w_m)
         self.mask_resize = module.resize_module(h1=self.h_m,w1=self.w_m,h2=self.h_f,w2=self.w_f)
 
         self.mask_feature_extract = nn.Conv2d(1, self.mask_feature_dim, 1)
@@ -174,8 +178,8 @@ class scene_graph_with_monet_v2(nn.Module):
         if masks is None:
             masks = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
         else:
-            masks = self.image_resize(masks.view(-1,self.slot_num,self.h_raw,self.w_raw))
-            
+            masks = self.true_mask_resize(masks.view(-1,self.slot_num,self.h_raw_raw,self.w_raw_raw))
+
         if self.loss_type == 'separate':
             masks = masks.detach()
         masks = self.mask_resize(masks.view(input.shape[0]*self.slot_num,1,self.h_m,self.w_m)).view(input.shape[0],self.slot_num,self.h_f,self.w_f)
