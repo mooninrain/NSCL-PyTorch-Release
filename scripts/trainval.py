@@ -37,7 +37,7 @@ parser = JacArgumentParser(description=__doc__.strip())
 parser.add_argument('--expr', required=True, metavar='DIR', help='experiment name')
 parser.add_argument('--desc', required=True, type='checked_file', metavar='FILE')
 parser.add_argument('--true_mask', default=0, type=int)
-parser.add_argument('--pretrained_monet', default=None, type='DIR', metavar='FILE', help='pretrained_data/monet64')
+parser.add_argument('--pretrained_monet', default=None, metavar='DIR', help='pretrained_data/monet64')
 parser.add_argument('--configs', default='', type='kv', metavar='CFGS')
 
 # training_target and curriculum learning
