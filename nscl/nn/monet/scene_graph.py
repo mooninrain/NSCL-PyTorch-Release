@@ -78,6 +78,9 @@ class scene_graph_with_monet_v1(nn.Module):
             masks = self.monet_mask_extract(self.image_resize(image),masks) # [batch_size,slot_num,h_m,w_m]
         else:
             masks = self.true_mask_resize(masks.view(-1,self.slot_num,self.h_raw_raw,self.w_raw_raw))
+
+        import pdb; pdb.set_trace()
+
         if self.loss_type == 'separate':
             masks = masks.detach()
         masks = self.mask_resize(masks.view(-1,1,self.h_m,self.w_m)).view(input.shape[0],-1,self.h_f,self.w_f)
