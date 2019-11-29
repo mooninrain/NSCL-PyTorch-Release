@@ -33,6 +33,7 @@ class Model(Im2Conceptv1Model):
         super().__init__(args, vocab, configs)
         self.loss_ratio = args.loss_ratio
         self.true_mask = args.true_mask
+        self.freeze_monet = args.freeze_monet
 
     def forward(self, feed_dict):
         feed_dict = GView(feed_dict)
@@ -51,7 +52,9 @@ class Model(Im2Conceptv1Model):
         canonize_monitors(monitors)
 
         if self.training:
-            loss = monitors['loss/qa'] + monitors['loss/monet'] * self.loss_ratio
+            loss = monitors['loss/qa']
+            if not self.freeze_monet:
+                loss += monitors['loss/monet'] * self.loss_ratio
             return loss, monitors, outputs
         else:
             outputs['monitors'] = monitors
