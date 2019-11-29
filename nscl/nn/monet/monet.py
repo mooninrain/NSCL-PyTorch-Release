@@ -32,7 +32,7 @@ class MONet(nn.Module):
 
         self.criterionKL = nn.KLDivLoss(reduction='batchmean')
 
-    def forward(self,x_input,masks=None):
+    def forward(self,x_input):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
         # x_input [batch_size, n_channels=3, h, w]
 
@@ -83,7 +83,7 @@ class MONet(nn.Module):
             m_tilde_logits.append(m_tilde_k_logits)
 
         self.b = torch.cat(b, dim=1)
-        self.m = torch.cat(m, dim=1) if masks is None else masks
+        self.m = torch.cat(m, dim=1)
         self.m_tilde_logits = torch.cat(m_tilde_logits, dim=1)
 
         return self.m
