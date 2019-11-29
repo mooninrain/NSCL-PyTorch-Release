@@ -1,4 +1,5 @@
 """C. P. Burgess et al., "MONet: Unsupervised Scene Decomposition and Representation," pp. 1–22, 2019."""
+import os
 from itertools import chain
 
 import torch
