@@ -28,7 +28,7 @@ class MONet(nn.Module):
 
         self.criterionKL = nn.KLDivLoss(reduction='batchmean')
 
-    def forward(self,x_input):
+    def forward(self,x_input,masks=None):
         """Run forward pass. This will be called by both functions <optimize_parameters> and <test>."""
         # x_input [batch_size, n_channels=3, h, w]
 
@@ -79,7 +79,7 @@ class MONet(nn.Module):
             m_tilde_logits.append(m_tilde_k_logits)
 
         self.b = torch.cat(b, dim=1)
-        self.m = torch.cat(m, dim=1)
+        self.m = torch.cat(m, dim=1) if masks is None else masks
         self.m_tilde_logits = torch.cat(m_tilde_logits, dim=1)
 
         return self.m
@@ -107,7 +107,7 @@ class MONet(nn.Module):
             for key in list(state_dict.keys()):
                 self.__patch_instance_norm_state_dict(state_dict,net,key.split('.'))
             net.load_state_dict(state_dict)
-            
+
     def __patch_instance_norm_state_dict(self, state_dict, module, keys, i=0):
         """Fix InstanceNorm checkpoints incompatibility (prior to 0.4)"""
         key = keys[i]
