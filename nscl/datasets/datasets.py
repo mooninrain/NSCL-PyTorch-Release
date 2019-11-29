@@ -102,14 +102,7 @@ class NSCLDatasetUnwrapped(FilterableDatasetUnwrapped):
                 # NB(Jiayuan Mao): in some datasets, object information might be completely unavailable.
                 feed_dict.objects_raw = feed_dict.objects.copy()
             feed_dict.update(gdef.annotate_scene(metainfo.scene))
-
-        print(type(feed_dict.objects))
-        print(len(feed_dict.objects))
-        print(feed_dict.objects[0].shape)
-        print(type(feed_dict.objects_mask))
-        print(len(feed_dict.objects_mask))
-        print(feed_dict.objects_mask[0].shape)
-        check=input('check')
+            
         # image
         feed_dict.image_index = metainfo.image_index
         feed_dict.image_filename = metainfo.image_filename
