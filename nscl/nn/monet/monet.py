@@ -106,7 +106,7 @@ class MONet(nn.Module):
         for net_name in self.model_names:
             load_path = os.path.join(pretrained_monet,'latest_net_%s.pth'%net_name)
             net = getattr(self, 'net'+net_name)
-            state_dict = torch.load(load_path, map_location=str(net.device))
+            state_dict = torch.load(load_path)
             if hasattr(state_dict, '_metadata'):
                 del state_dict._metadata
             for key in list(state_dict.keys()):
