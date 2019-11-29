@@ -36,6 +36,8 @@ parser = JacArgumentParser(description=__doc__.strip())
 
 parser.add_argument('--expr', required=True, metavar='DIR', help='experiment name')
 parser.add_argument('--desc', required=True, type='checked_file', metavar='FILE')
+parser.add_argument('--true_mask', default=0, type=int)
+parser.add_argument('--pretrained_monet', default=None, type='DIR', metavar='FILE', help='pretrained_data/monet64')
 parser.add_argument('--configs', default='', type='kv', metavar='CFGS')
 
 # training_target and curriculum learning
@@ -90,6 +92,7 @@ parser.add_argument('--embed', action='store_true', help='entering embed after i
 parser.add_argument('--force-gpu', action='store_true', help='force the script to use GPUs, useful when there exists on-the-ground devices')
 
 args = parser.parse_args()
+args.true_mask = bool(args.true_mask)
 
 if args.data_vocab_json is None:
     args.data_vocab_json = osp.join(args.data_dir, 'vocab.json')
