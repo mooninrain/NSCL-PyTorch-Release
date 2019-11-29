@@ -29,7 +29,7 @@ __all__ = ['scene_graph_with_monet']
 
 
 class scene_graph_with_monet_v1(nn.Module):
-    def __init__(self, feature_dim, output_dims, loss_type):
+    def __init__(self, feature_dim, output_dims, loss_type, pretrained_monet=None):
         super().__init__()
         self.loss_type = loss_type
 
@@ -42,7 +42,7 @@ class scene_graph_with_monet_v1(nn.Module):
         self.output_dims = output_dims
 
         self.image_resize = module.resize_module_cv2(h1=self.h_raw,w1=self.w_raw,h2=self.h_m,w2=self.w_m)
-        self.monet_mask_extract = monet.MONet()
+        self.monet_mask_extract = monet.MONet(pretrained_monet)
         self.mask_resize = module.resize_module(h1=self.h_m,w1=self.w_m,h2=self.h_f,w2=self.w_f)
 
         self.context_feature_extract = nn.Conv2d(feature_dim, feature_dim, 1)
@@ -67,12 +67,13 @@ class scene_graph_with_monet_v1(nn.Module):
                 if 'bias' in m.__dict__:
                     m.bias.data.zero_() 
 
-    def forward(self, input, image):
+    def forward(self, input, image, masks=None):
         object_features = input #[batch_size,feature_dim,h_f,w_f]
         context_features = self.context_feature_extract(input) #[batch_size,feature_dim,h_f,w_f]
         relation_features = self.relation_feature_extract(input) #[batch_size,feature_dim//2*3,h_f,w_f]
 
-        masks = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
+        if masks is None:
+            masks = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
         if self.loss_type == 'separate':
             masks = masks.detach()
         masks = self.mask_resize(masks.view(-1,1,self.h_m,self.w_m)).view(input.shape[0],-1,self.h_f,self.w_f)
@@ -122,7 +123,7 @@ class scene_graph_with_monet_v1(nn.Module):
 
 
 class scene_graph_with_monet_v2(nn.Module):
-    def __init__(self, feature_dim, output_dims, loss_type):
+    def __init__(self, feature_dim, output_dims, loss_type, pretrained_monet=None):
         super().__init__()
         self.loss_type = loss_type
 
@@ -137,7 +138,7 @@ class scene_graph_with_monet_v2(nn.Module):
         self.output_dims = output_dims
 
         self.image_resize = module.resize_module_cv2(h1=self.h_raw,w1=self.w_raw,h2=self.h_m,w2=self.w_m)
-        self.monet_mask_extract = monet.MONet()
+        self.monet_mask_extract = monet.MONet(pretrained_monet)
         self.mask_resize = module.resize_module(h1=self.h_m,w1=self.w_m,h2=self.h_f,w2=self.w_f)
 
         self.mask_feature_extract = nn.Conv2d(1, self.mask_feature_dim, 1)
@@ -163,12 +164,13 @@ class scene_graph_with_monet_v2(nn.Module):
                 if 'bias' in m.__dict__:
                     m.bias.data.zero_() 
 
-    def forward(self, input, image):
+    def forward(self, input, image, masks=None):
         object_features = input #[batch_size,feature_dim,h_f,w_f]
         context_features = self.context_feature_extract(input) #[batch_size,feature_dim,h_f,w_f]
         relation_features = self.relation_feature_extract(input) #[batch_size,feature_dim//2*3,h_f,w_f]
 
-        masks = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
+        if masks is None:
+            masks = self.monet_mask_extract(self.image_resize(image)) # [batch_size,slot_num,h_m,w_m]
         if self.loss_type == 'separate':
             masks = masks.detach()
         masks = self.mask_resize(masks.view(input.shape[0]*self.slot_num,1,self.h_m,self.w_m)).view(input.shape[0],self.slot_num,self.h_f,self.w_f)
