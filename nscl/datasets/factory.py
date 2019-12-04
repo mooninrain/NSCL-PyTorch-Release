@@ -52,7 +52,6 @@ def initialize_dataset(dataset):
 
 
 def get_available_datasets():
-    import pdb; pdb.set_trace()
     return dataset_registry['dataset'].keys()
 
 
